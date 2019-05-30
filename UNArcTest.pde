@@ -14,7 +14,7 @@ boolean PDFOUT = false;
 final int numberOfMemberStates = 211;
 final int numberOfUNAgencies = 20;
 
-Table agencyCountryTbl;
+Table agencyCountryTbl, expenditureByCountryTbl,agencyExpenditureTotalTbl;
 int fundingAxisMax, fundingAxisMin;
 
 
@@ -52,30 +52,32 @@ void setup() {
 
   // load data
   agencyCountryTbl = loadTable("Agency_Expenditure_by_Country_2015.csv", "header");
-
+  expenditureByCountryTbl = loadTable("Total_Expenditure_by_Country.csv", "header");
+  agencyExpenditureTotalTbl = loadTable("Agency_Expenditure_Total_2015.csv", "header");
   // prep data
   // min / max for funding axis
   fundingAxisMin = 0;
-fundingAxisMax = 0;
-for(int i=0; i < agencyCountryTbl.getRowCount(); i++){
-      
-       TableRow row = agencyCountryTbl.getRow(i);
-       int  currAmtVal= row.getInt("Amount");
-       if( currAmtVal > fundingAxisMax) fundingAxisMax = currAmtVal;
-}
- println("fundingAxisMax = "+ fundingAxisMax);
+  fundingAxisMax = 0;
+  for (int i=0; i < agencyCountryTbl.getRowCount(); i++) {
+    TableRow agencyCountryRow = agencyCountryTbl.getRow(i);
+    int  currAmtVal= agencyCountryRow.getInt("Amount");
+    if ( currAmtVal > fundingAxisMax) fundingAxisMax = currAmtVal;
+  }
+  println("fundingAxisMax = "+ fundingAxisMax);
   mainTitleF = createFont("Helvetica", 18);  //requires a font file in the data folder?
 
-  println("row count = " + agencyCountryTbl.getRowCount());
+  println("agencyCountryTbl row count = " + agencyCountryTbl.getRowCount());
+  println("expenditureByCountryTbl row count = " + expenditureByCountryTbl.getRowCount());
+  println("agencyExpenditureTotalTbl row count = " + agencyExpenditureTotalTbl.getRowCount());
   println("setup done: " + nf(millis() / 1000.0, 1, 2));
 }
 
 void draw() {
   background(255);
-  fill(255,47);
-  stroke(255,50);
+  fill(255, 47);
+  stroke(255, 50);
   strokeWeight(1);
-  rect(0,0,width,height);
+  rect(0, 0, width, height);
 
 
 
@@ -88,18 +90,26 @@ void draw() {
   countryY = PLOT_Y2;
   fundingX = PLOT_X1+(PLOT_W*(1.0*numberOfUNAgencies/numberOfMemberStates));
 
+
+// render the axis
   line(PLOT_X1, agencyY, PLOT_X1+300, agencyY);
   line(PLOT_X2, countryY, PLOT_X2-300, countryY);
   line(fundingX, PLOT_Y2-300, fundingX, PLOT_Y1);  
 
 
-
-
-  for (int i = 0; i < agencyCountryTbl.getRowCount(); i++) {
+// render the arcs
     strokeWeight(.15); 
-    // agencyX = map(random(1), 0, 1, PLOT_X1, PLOT_X1+300);
-    // countryX = map(random(1), 0, 1, PLOT_X2, PLOT_X2-300);
-    // fundingY = map(random(1), 0, 1, PLOT_Y2-300, PLOT_Y1);
+  for (int i=0; i < agencyCountryTbl.getRowCount(); i++) {
+    TableRow agencyCountryRow = agencyCountryTbl.getRow(i);
+    int  currAmtVal= agencyCountryRow.getInt("Amount");
+
+    int currAgencyOrd =             agencyExpenditureTotalTbl.findRowIndex(agencyCountryRow.getString("Agency"), "Agency");
+    agencyX = map(currAgencyOrd,    0, agencyExpenditureTotalTbl.getRowCount(), PLOT_X1, PLOT_X1+300);
+    
+    int currCountryOrd =            expenditureByCountryTbl.findRowIndex(agencyCountryRow.getString("Country"),"Country");
+    countryX = map(currCountryOrd,  0, expenditureByCountryTbl.getRowCount(), PLOT_X2, PLOT_X2-300);
+
+    fundingY = map(currAmtVal, fundingAxisMin, fundingAxisMax, PLOT_Y2-300, PLOT_Y1);
 
 
     // ellipse(agencyX, agencyY, 3, 3);
@@ -108,13 +118,13 @@ void draw() {
     noFill();
     stroke(0);
     // strokeWeight(1);
-    // beginShape();
-    // curveVertex(agencyX, agencyY+100); // first control point
-    // curveVertex(agencyX, agencyY); // also the first data point
-    // curveVertex(fundingX, fundingY);
-    // curveVertex(countryX, countryY);
-    // curveVertex(countryX-321, countryY+321); // ending control point
-    // endShape();
+    beginShape();
+    curveVertex(agencyX, agencyY+100); // first control point
+    curveVertex(agencyX, agencyY); // also the first data point
+    curveVertex(fundingX, fundingY);
+    curveVertex(countryX, countryY);
+    curveVertex(countryX-321, countryY+321); // ending control point
+    endShape();
   }
 
 
