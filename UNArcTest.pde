@@ -1,4 +1,7 @@
 // UN Funding by Agency and Country Arc Diagram Test
+// estimated 35 agencies
+// 193 member states
+
 
 import processing.pdf.*;
 
@@ -7,6 +10,11 @@ int rSn; // randomSeed number. put into var so can be saved in file name. defaul
 final float PHI = 0.618033989;
 boolean recording = false; // used for MovieMaker output
 boolean PDFOUT = false;
+
+// final int numberOfMemberStates = 211;
+// final int numberOfUNAgencies = 20;
+final int numberOfMemberStates = 10;
+final int numberOfUNAgencies = 10;
 
 
 //// Declare Font Variables
@@ -26,7 +34,7 @@ void setup() {
   //// PDF output
   // size(800, 450, PDF, generateSaveImgFileName(".pdf"));
   //// Regular output
-  size(800, 450); // quarter page size
+  size(1080, 1080); // quarter page size
 
   margin = width * pow(PHI, 6);
   println("margin: " + margin);
@@ -40,48 +48,79 @@ void setup() {
   rSn = 47; // 4,7,11,18,29...;
   randomSeed(rSn);
 
+
+
+
+
   mainTitleF = createFont("Helvetica", 18);  //requires a font file in the data folder?
 
   println("setup done: " + nf(millis() / 1000.0, 1, 2));
 }
 
 void draw() {
-  background(255);
+  // background(255);
+  fill(255,47);
+  stroke(255,50);
+  strokeWeight(1);
+  rect(0,0,width,height);
+
+
+
+
   fill(0);
 
   stroke(0);
-  line(PLOT_X1, PLOT_Y2, PLOT_X1+300, PLOT_Y2);
-  line(PLOT_X2, PLOT_Y2, PLOT_X2-300, PLOT_Y2);
-  line(PLOT_X1+PLOT_W/2,PLOT_Y2, PLOT_X1+PLOT_W/2, PLOT_Y1);  
+  float agencyX, agencyY, fundingX, fundingY, countryX, countryY;
+  agencyY = PLOT_Y2;
+  countryY = PLOT_Y2;
+  fundingX = PLOT_X1+(PLOT_W*(1.0*numberOfUNAgencies/numberOfMemberStates));
 
-
-float agencyX, agencyY, fundingX, fundingY, countryX, countryY;
-agencyY = PLOT_Y2;
-countryY = PLOT_Y2;
-fundingX = PLOT_X1+PLOT_W/2;
-
-
-for (int i = 0; i < 4; i++) {
-  strokeWeight(0.5); 
-  agencyX = map(random(1),0,1, PLOT_X1, PLOT_Y1+300);
-  ellipse(agencyX, agencyY, 5, 5);
-
-
-}
+  line(PLOT_X1, agencyY, PLOT_X1+300, agencyY);
+  line(PLOT_X2, countryY, PLOT_X2-300, countryY);
+  line(fundingX, PLOT_Y2-300, fundingX, PLOT_Y1);  
 
 
 
 
+  for (int i = 0; i < numberOfMemberStates*numberOfUNAgencies; i++) {
+  // for (int i = 0; i < 1610; i++) {
+    strokeWeight(.15); 
+    // agencyX = map(random(1), 0, 1, PLOT_X1, PLOT_X1+300);
+    // countryX = map(random(1), 0, 1, PLOT_X2, PLOT_X2-300);
+    // fundingY = map(random(1), 0, 1, PLOT_Y2-300, PLOT_Y1);
+
+    agencyX = random(1.0*PLOT_X1, 1.0*PLOT_X1+300);
+    countryX = random(1.0*PLOT_X2, 1.0*PLOT_X2-300);
+    fundingY = random(1.0*PLOT_Y2-300, 1.0*PLOT_Y1);
+
+
+    // ellipse(agencyX, agencyY, 3, 3);
+    // ellipse(countryX, countryY, 3, 3);
+    // ellipse(fundingX, fundingY, 3, 3);
+    noFill();
+    stroke(0);
+    // strokeWeight(1);
+    beginShape();
+    curveVertex(agencyX, agencyY+100); // first control point
+    curveVertex(agencyX, agencyY); // also the first data point
+    curveVertex(fundingX, fundingY);
+    curveVertex(countryX, countryY);
+    curveVertex(countryX-321, countryY+321); // ending control point
+    endShape();
+  }
 
 
 
-  textFont(mainTitleF);
-  text("sspboyd", PLOT_X1, PLOT_Y2);
+
+
+
+
+  // textFont(mainTitleF);
+  // fill(47, 47);
+  // text("sspboyd", PLOT_X1, PLOT_Y2);
 
   if (PDFOUT) exit();
   if (recording) saveFrame("MM_output/" + getSketchName() + "-#####.png");
-
-
 }
 
 void keyPressed() {
@@ -94,7 +133,7 @@ void mousePressed() {
 String generateSaveImgFileName(String fileType) {
   String fileName;
   // save functionality in here
-  String outputDir = "out/";
+  String outputDir = "output/";
   String sketchName = getSketchName() + "-";
   String randomSeedNum = "rSn" + rSn + "-";
   String dateTimeStamp = "" + year() + nf(month(), 2) + nf(day(), 2) + nf(hour(), 2) + nf(minute(), 2) + nf(second(), 2);
