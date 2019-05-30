@@ -11,10 +11,12 @@ final float PHI = 0.618033989;
 boolean recording = false; // used for MovieMaker output
 boolean PDFOUT = false;
 
-// final int numberOfMemberStates = 211;
-// final int numberOfUNAgencies = 20;
-final int numberOfMemberStates = 10;
-final int numberOfUNAgencies = 10;
+final int numberOfMemberStates = 211;
+final int numberOfUNAgencies = 20;
+
+Table agencyCountryTbl;
+int fundingAxisMax, fundingAxisMin;
+
 
 
 //// Declare Font Variables
@@ -48,17 +50,28 @@ void setup() {
   rSn = 47; // 4,7,11,18,29...;
   randomSeed(rSn);
 
+  // load data
+  agencyCountryTbl = loadTable("Agency_Expenditure_by_Country_2015.csv", "header");
 
-
-
-
+  // prep data
+  // min / max for funding axis
+  fundingAxisMin = 0;
+fundingAxisMax = 0;
+for(int i=0; i < agencyCountryTbl.getRowCount(); i++){
+      
+       TableRow row = agencyCountryTbl.getRow(i);
+       int  currAmtVal= row.getInt("Amount");
+       if( currAmtVal > fundingAxisMax) fundingAxisMax = currAmtVal;
+}
+ println("fundingAxisMax = "+ fundingAxisMax);
   mainTitleF = createFont("Helvetica", 18);  //requires a font file in the data folder?
 
+  println("row count = " + agencyCountryTbl.getRowCount());
   println("setup done: " + nf(millis() / 1000.0, 1, 2));
 }
 
 void draw() {
-  // background(255);
+  background(255);
   fill(255,47);
   stroke(255,50);
   strokeWeight(1);
@@ -82,16 +95,11 @@ void draw() {
 
 
 
-  for (int i = 0; i < numberOfMemberStates*numberOfUNAgencies; i++) {
-  // for (int i = 0; i < 1610; i++) {
+  for (int i = 0; i < agencyCountryTbl.getRowCount(); i++) {
     strokeWeight(.15); 
     // agencyX = map(random(1), 0, 1, PLOT_X1, PLOT_X1+300);
     // countryX = map(random(1), 0, 1, PLOT_X2, PLOT_X2-300);
     // fundingY = map(random(1), 0, 1, PLOT_Y2-300, PLOT_Y1);
-
-    agencyX = random(1.0*PLOT_X1, 1.0*PLOT_X1+300);
-    countryX = random(1.0*PLOT_X2, 1.0*PLOT_X2-300);
-    fundingY = random(1.0*PLOT_Y2-300, 1.0*PLOT_Y1);
 
 
     // ellipse(agencyX, agencyY, 3, 3);
@@ -100,13 +108,13 @@ void draw() {
     noFill();
     stroke(0);
     // strokeWeight(1);
-    beginShape();
-    curveVertex(agencyX, agencyY+100); // first control point
-    curveVertex(agencyX, agencyY); // also the first data point
-    curveVertex(fundingX, fundingY);
-    curveVertex(countryX, countryY);
-    curveVertex(countryX-321, countryY+321); // ending control point
-    endShape();
+    // beginShape();
+    // curveVertex(agencyX, agencyY+100); // first control point
+    // curveVertex(agencyX, agencyY); // also the first data point
+    // curveVertex(fundingX, fundingY);
+    // curveVertex(countryX, countryY);
+    // curveVertex(countryX-321, countryY+321); // ending control point
+    // endShape();
   }
 
 
