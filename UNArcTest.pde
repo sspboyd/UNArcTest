@@ -12,7 +12,7 @@ Table agencyCountryTbl, expenditureByCountryTbl, agencyExpenditureTotalTbl;
 int fundingAxisMax, fundingAxisMin;
 
 //// Declare Font Variables
-PFont mainTitleF;
+PFont mainTitleF, axesLabelF;
 
 //// Declare Positioning Variables
 float margin;
@@ -48,7 +48,8 @@ void setup() {
     if ( currAmtVal > fundingAxisMax) fundingAxisMax = currAmtVal;
   }
   println("fundingAxisMax = "+ fundingAxisMax);
-  mainTitleF = createFont("Helvetica", 18);  //requires a font file in the data folder?
+  mainTitleF = createFont("Helvetica", 24);  //requires a font file in the data folder?
+  axesLabelF = createFont("Helvetica", 12);  //requires a font file in the data folder?
 
   println("agencyCountryTbl row count = " + agencyCountryTbl.getRowCount());
   println("expenditureByCountryTbl row count = " + expenditureByCountryTbl.getRowCount());
@@ -94,7 +95,18 @@ void draw() {
   stroke(0, 50);
   line(agencyAxis1.x, agencyAxis1.y, agencyAxis2.x, agencyAxis2.y);
   line(countryAxis1.x, countryAxis1.y, countryAxis2.x, countryAxis2.y);
-  line(fundingAxis1.x, fundingAxis1.y, fundingAxis2.x, fundingAxis2.y);  
+  line(fundingAxis1.x, fundingAxis1.y, fundingAxis2.x, fundingAxis2.y);
+
+  // label axes
+  fill(0);
+  textFont(axesLabelF);
+  text("Countries", countryAxis1.x, countryAxis1.y + textAscent() + 5);
+  text("UN Agencies", agencyAxis1.x, agencyAxis1.y + textAscent() + 5);
+  text("Funding", fundingAxis1.x  - textWidth("Funding") - 5, fundingAxis1.y + textAscent());
+
+// Render chart title
+  textFont(mainTitleF);
+  text("UN Agency Expenditures \nby Country for 2015", PLOT_X1, PLOT_Y1+textAscent());
 
 
   // render the arcs
@@ -130,14 +142,12 @@ void draw() {
   }
 
 
-  // textFont(mainTitleF);
-  // text("sspboyd", PLOT_X1, PLOT_Y2);
 
   if (recording) saveFrame("MM_output/" + getSketchName() + "-#####.png");
 }
 
 void keyPressed() {
-  if (key == 'S') screenCap(".tif");
+  if (key == 'S') screenCap(".jpg");
 }
 
 String generateSaveImgFileName(String fileType) {
