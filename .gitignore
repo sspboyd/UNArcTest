@@ -44,3 +44,4 @@ srcFiles/
 *.MOV
 # VS Code Files #
 tasks.json
+.vscode/
