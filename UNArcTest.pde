@@ -1,7 +1,4 @@
 // UN Funding by Agency and Country Arc Diagram Test
-// estimated 35 agencies
-// 193 member states
-
 
 ////Declare Globals
 int rSn; // randomSeed number. put into var so can be saved in file name. defaults to 47
@@ -14,15 +11,12 @@ final int numberOfUNAgencies = 20;
 Table agencyCountryTbl, expenditureByCountryTbl, agencyExpenditureTotalTbl;
 int fundingAxisMax, fundingAxisMin;
 
-
 //// Declare Font Variables
 PFont mainTitleF;
-
 
 //// Declare Positioning Variables
 float margin;
 float PLOT_X1, PLOT_X2, PLOT_Y1, PLOT_Y2, PLOT_W, PLOT_H;
-
 
 /*////////////////////////////////////////
  SETUP
@@ -30,10 +24,10 @@ float PLOT_X1, PLOT_X2, PLOT_Y1, PLOT_Y2, PLOT_W, PLOT_H;
 
 void setup() {
   background(255);
-  //// PDF output
-  // size(800, 450, PDF, generateSaveImgFileName(".pdf"));
-  //// Regular output
-  size(1080, 1080); // quarter page size
+  // PDF output
+  // size(1080, 1080, PDF, generateSaveImgFileName(".pdf"));
+  // Regular output
+  size(1200, 960);
 
   setPositioningVariables();
   rSn = 47; // 4,7,11,18,29...;
@@ -53,7 +47,6 @@ void setup() {
     int  currAmtVal= agencyCountryRow.getInt("Amount");
     if ( currAmtVal > fundingAxisMax) fundingAxisMax = currAmtVal;
   }
-
   println("fundingAxisMax = "+ fundingAxisMax);
   mainTitleF = createFont("Helvetica", 18);  //requires a font file in the data folder?
 
@@ -63,31 +56,45 @@ void setup() {
   println("setup done: " + nf(millis() / 1000.0, 1, 2));
 }
 
-
 /*////////////////////////////////////////
- DRAW
+ SETUP
  ////////////////////////////////////////*/
 
 void draw() {
   background(255);
-  fill(255, 47);
-  stroke(255, 50);
-  strokeWeight(1);
-  rect(0, 0, width, height);
 
-  fill(0);
-
-  stroke(0);
   float agencyX, agencyY, fundingX, fundingY, countryX, countryY;
-  agencyY = PLOT_Y2;
-  countryY = PLOT_Y2;
-  fundingX = PLOT_X1+(PLOT_W*(1.0*numberOfUNAgencies/numberOfMemberStates));
+  PVector agencyAxis1, fundingAxis1, countryAxis1, agencyAxis2, fundingAxis2, countryAxis2;
+  agencyAxis1 = new PVector();
+  agencyAxis2 = new PVector();
+
+  fundingAxis1 = new PVector();
+  fundingAxis2 = new PVector();
+
+  countryAxis1 = new PVector();
+  countryAxis2 = new PVector();
+
+  fundingAxis1.x = PLOT_X1 + (PLOT_W*(1-PHI));
+  fundingAxis1.y = PLOT_Y1;
+  fundingAxis2.x = fundingAxis1.x;
+  fundingAxis2.y = PLOT_Y1 + (PLOT_H*(PHI));
+
+  agencyAxis1.x = PLOT_X1;
+  agencyAxis1.y = PLOT_Y2;
+  agencyAxis2.x = PLOT_X1 + (PLOT_W*(1-PHI))-50;
+  agencyAxis2.y = PLOT_Y2;
+
+  countryAxis1.x = PLOT_X1 + (PLOT_W * (1-PHI))+50;
+  countryAxis1.y = PLOT_Y2;
+  countryAxis2.x = PLOT_X2;
+  countryAxis2.y = countryAxis1.y;
 
 
-  // render the axis
-  line(PLOT_X1, agencyY, PLOT_X1+300, agencyY);
-  line(PLOT_X2, countryY, PLOT_X2-300, countryY);
-  line(fundingX, PLOT_Y2-300, fundingX, PLOT_Y1);  
+  // render the axes
+  stroke(0, 50);
+  line(agencyAxis1.x, agencyAxis1.y, agencyAxis2.x, agencyAxis2.y);
+  line(countryAxis1.x, countryAxis1.y, countryAxis2.x, countryAxis2.y);
+  line(fundingAxis1.x, fundingAxis1.y, fundingAxis2.x, fundingAxis2.y);  
 
 
   // render the arcs
@@ -97,44 +104,46 @@ void draw() {
     int  currAmtVal= agencyCountryRow.getInt("Amount");
 
     int currAgencyOrd = agencyExpenditureTotalTbl.findRowIndex(agencyCountryRow.getString("Agency"), "Agency");
-    agencyX = map(currAgencyOrd, 0, agencyExpenditureTotalTbl.getRowCount(), PLOT_X1, PLOT_X1+300);
+    agencyX = map(currAgencyOrd, 0, agencyExpenditureTotalTbl.getRowCount(), agencyAxis1.x, agencyAxis2.x);
+    agencyY = agencyAxis1.y;
 
     int currCountryOrd = expenditureByCountryTbl.findRowIndex(agencyCountryRow.getString("Country"), "Country");
-    countryX = map(currCountryOrd, 0, expenditureByCountryTbl.getRowCount(), PLOT_X2, PLOT_X2-300);
+    countryX = map(currCountryOrd, 0, expenditureByCountryTbl.getRowCount(), countryAxis2.x, countryAxis1.x);
+    countryY = countryAxis1.y;
 
-    fundingY = map(currAmtVal, fundingAxisMin, fundingAxisMax, PLOT_Y2-300, PLOT_Y1);
+    fundingX = fundingAxis1.x;
+
+    // fundingY = map(currAmtVal, fundingAxisMax, fundingAxisMin, fundingAxis1.y, fundingAxis2.y);
+    fundingY = powMap(currAmtVal, Math.E, fundingAxisMax, fundingAxisMin, fundingAxis1.y, fundingAxis2.y);
 
 
-    // ellipse(agencyX, agencyY, 3, 3);
-    // ellipse(countryX, countryY, 3, 3);
-    // ellipse(fundingX, fundingY, 3, 3);
     noFill();
-    stroke(0);
+    stroke(0, 150);
     // strokeWeight(1);
     beginShape();
-    curveVertex(agencyX, agencyY+100); // first control point
+    curveVertex(agencyX, agencyY+1000); // first control point
     curveVertex(agencyX, agencyY); // also the first data point
     curveVertex(fundingX, fundingY);
     curveVertex(countryX, countryY);
-    curveVertex(countryX-321, countryY+321); // ending control point
+    curveVertex(countryX, countryY+1000); // ending control point
     endShape();
   }
 
+
   // textFont(mainTitleF);
-  // fill(47, 47);
   // text("sspboyd", PLOT_X1, PLOT_Y2);
 
   if (recording) saveFrame("MM_output/" + getSketchName() + "-#####.png");
 }
 
 void keyPressed() {
-  if (key == 'S') screenCap(".jpg");
+  if (key == 'S') screenCap(".tif");
 }
 
 String generateSaveImgFileName(String fileType) {
   String fileName;
   // save functionality in here
-  String outputDir = "output/";
+  String outputDir = "out/";
   String sketchName = getSketchName() + "-";
   String randomSeedNum = "rSn" + rSn + "-";
   String dateTimeStamp = "" + year() + nf(month(), 2) + nf(day(), 2) + nf(hour(), 2) + nf(minute(), 2) + nf(second(), 2);
@@ -157,6 +166,17 @@ String getSketchName() {
   String[] path = split(sketchPath(), "/");
   return path[path.length-1];
 }
+
+
+// Exponential scale
+// float powMap(incr, base, start1, stop1, start2, stop2) {
+float powMap(int incr, double base, int start1, int stop1, float start2, float stop2) {
+  // base should be an inverse (eg 1/2), start1/stop1 are the value range, start2/stop2 are the output range
+  float normX = map(incr, start1, stop1, 0, 1);
+  float newX = pow(normX, (float)base);
+  return map(newX, 0, 1, start2, stop2);
+}
+
 
 void setPositioningVariables() {
   margin = width * pow(PHI, 6);
