@@ -27,7 +27,7 @@ void setup() {
   // PDF output
   // size(1080, 1080, PDF, generateSaveImgFileName(".pdf"));
   // Regular output
-  size(1200, 960);
+  size(1900, 960);
 
   setPositioningVariables();
   rSn = 47; // 4,7,11,18,29...;
@@ -85,10 +85,15 @@ void draw() {
   agencyAxis2.x = PLOT_X1 + (PLOT_W*(1-PHI))-50;
   agencyAxis2.y = PLOT_Y2;
 
-  countryAxis1.x = PLOT_X1 + (PLOT_W * (1-PHI))+50;
-  countryAxis1.y = PLOT_Y2;
+  // countryAxis1.x = PLOT_X1 + (PLOT_W * (1-PHI))+50;
+  // countryAxis1.y = PLOT_Y2;
+  // countryAxis2.x = PLOT_X2;
+  // countryAxis2.y = countryAxis1.y;
+
+  countryAxis1.x = PLOT_X2- PLOT_W * (pow(PHI, 3));
+  countryAxis1.y = PLOT_Y1;
   countryAxis2.x = PLOT_X2;
-  countryAxis2.y = countryAxis1.y;
+  countryAxis2.y = PLOT_Y2;
 
 
   // render the axes
@@ -100,9 +105,17 @@ void draw() {
   // label axes
   fill(0);
   textFont(axesLabelF);
-  text("Countries", countryAxis1.x, countryAxis1.y + textAscent() + 5);
+  // text("Countries", countryAxis1.x, countryAxis1.y + textAscent() + 5);
   text("UN Agencies", agencyAxis1.x, agencyAxis1.y + textAscent() + 5);
   text("Funding", fundingAxis1.x  - textWidth("Funding") - 5, fundingAxis1.y + textAscent());
+
+  // add country names
+  int rowCounter=0;
+  for (TableRow row : expenditureByCountryTbl.rows()) {
+    float tx = countryAxis1.x + 18;
+    float ty = map(rowCounter+=1, 0, expenditureByCountryTbl.getRowCount(), PLOT_Y1, PLOT_Y2);
+    text(row.getString("Country"), tx, ty);
+  }
 
 // Render chart title
   textFont(mainTitleF);
@@ -120,8 +133,10 @@ void draw() {
     agencyY = agencyAxis1.y;
 
     int currCountryOrd = expenditureByCountryTbl.findRowIndex(agencyCountryRow.getString("Country"), "Country");
-    countryX = map(currCountryOrd, 0, expenditureByCountryTbl.getRowCount(), countryAxis2.x, countryAxis1.x);
-    countryY = countryAxis1.y;
+    // countryX = map(currCountryOrd, 0, expenditureByCountryTbl.getRowCount(), countryAxis2.x, countryAxis1.x);
+    // countryY = countryAxis1.y;
+    countryX = countryAxis1.x;
+    countryY = map(currCountryOrd, 0, expenditureByCountryTbl.getRowCount(), countryAxis1.y, countryAxis2.y);
 
     fundingX = fundingAxis1.x;
 
@@ -137,7 +152,7 @@ void draw() {
     curveVertex(agencyX, agencyY); // also the first data point
     curveVertex(fundingX, fundingY);
     curveVertex(countryX, countryY);
-    curveVertex(countryX, countryY+1000); // ending control point
+    curveVertex(countryX+1000, countryY-500); // ending control point
     endShape();
   }
 
