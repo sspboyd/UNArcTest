@@ -30,11 +30,11 @@ web-export/
 # Some specific to my workflow  #
 #################################
 out/
-output/
+# output/
 savedImages/
 srcFiles/
-*.jpg
-*.JPG
+# *.jpg
+# *.JPG
 *.tiff
 *.tif
 *.TIFF
@@ -42,6 +42,7 @@ srcFiles/
 *.PNG
 *.mov
 *.MOV
+# *.mp4
 # VS Code Files #
 tasks.json
 .vscode/
