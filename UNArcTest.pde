@@ -18,10 +18,11 @@ PFont mainTitleF, axesLabelF, titleF;
 
 //Highlight colour (UN Blue)
 color unBlueClr = color(91, 146, 229);
-color transactionCurveClr = color(255);
-color chartBkgClr = unBlueClr;
-color axisClr = color(255,200);
+color transactionCurveClr = color(0);
+color chartBkgClr = 255;
+color axisClr = unBlueClr;
 color barChartClr = axisClr;
+color countryLabelClr = unBlueClr;
 
 //// Declare Positioning Variables
 float margin;
@@ -111,7 +112,7 @@ void draw() {
   for (TableRow row : expenditureByCountryTbl.rows()) {
     float tx = countryAxis1.x + 18;
     float ty = map(rowCounter+=1, 0, expenditureByCountryTbl.getRowCount(), PLOT_Y1, PLOT_Y2);
-    fill(unBlueClr, 100);
+    fill(countryLabelClr);
     text(row.getString("Country"), tx, ty);
 
     float barChartW = map(row.getFloat("Amount"), 0, countryExpendMax, 0, PLOT_X2-countryAxis1.x);
@@ -119,6 +120,21 @@ void draw() {
     fill(barChartClr);
     noStroke();
     rect(tx, ty, barChartW, 5);
+  }
+
+  // add agency names
+   rowCounter=0;
+  for (TableRow row : agencyExpenditureTotalTbl.rows()) {
+    // float tx = countryAxis1.x + 18;
+    // float ty = map(rowCounter+=1, 0, expenditureByCountryTbl.getRowCount(), PLOT_Y1, PLOT_Y2);
+    float tx = map(rowCounter+=1, 0, agencyExpenditureTotalTbl.getRowCount(), agencyAxis1.x, agencyAxis2.x);
+    float ty = agencyAxis1.y+20;
+    pushMatrix();
+    translate(tx,ty);
+    rotate(HALF_PI/2);
+    fill(unBlueClr, 199);
+    text(row.getString("Agency"), 0, 0);
+    popMatrix();
   }
 
   // Render chart title
@@ -147,7 +163,7 @@ void draw() {
     fundingX = fundingAxis1.x;
 
     if (fundingScaleLinLog) {
-      fundingY = map(currAmtVal, transactionMax, transactionMin, fundingAxis1.y, fundingAxis2.y);
+      fundingY = map(currAmtVal, transactionMax, transactionMin, fundingAxis1.y, fundingAxis2.y); // change transactionMax to funding order of magnitude max.
     }else{
       fundingY = powMap(currAmtVal, fundingAxisLogBase, transactionMax, transactionMin, fundingAxis1.y, fundingAxis2.y);
     }
@@ -284,8 +300,6 @@ void renderFundingAxisScaleMarkers() {
   float maxTickVal = getHigherOrderOfMag(transactionMax);
   // 0, 10, 100, 1,000, 10,000, 100,000, 1,000,000, 10,000,000, 100,000,000, 1,000,000,000
 
-  // set the font and colour for the ticks and text
-  stroke(100, 100, 255);
   float fundingScaleTickVal = maxTickVal;
 
   float tickX, tickY;
@@ -308,9 +322,11 @@ float currTickVal = pow(10, i);
       // tickY = powMap((int)currTickVal, Math.E, (int)maxTickVal, transactionMin, fundingAxis1.y, fundingAxis2.y);
     }
     // place tick 
+    stroke(transactionCurveClr);
     line(tickX, tickY, tickX-10, tickY);
     // place text
     // textFont();
+    fill(transactionCurveClr);
     text((int)currTickVal, tickX-200, tickY);
 
     // fundingScaleTickVal = fundingScaleTickVal-1;
