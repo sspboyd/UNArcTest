@@ -9,6 +9,7 @@ final int numberOfMemberStates = 211;
 final int numberOfUNAgencies = 20;
 
 Table agencyCountryTbl, expenditureByCountryTbl, agencyExpenditureTotalTbl;
+
 int transactionMax, transactionMin;
 int countryExpendMax, countryExpendMin;
 
@@ -20,8 +21,8 @@ PFont mainTitleF, axesLabelF, titleF;
 color unBlueClr = color(91, 146, 229);
 color transactionCurveClr = color(0);
 color chartBkgClr = 255;
-color axisClr = unBlueClr;
-color barChartClr = axisClr;
+color axisClr = transactionCurveClr;
+color barChartClr = transactionCurveClr;
 color countryLabelClr = unBlueClr;
 
 //// Declare Positioning Variables
@@ -33,6 +34,11 @@ PVector agencyAxis1, fundingAxis1, countryAxis1, agencyAxis2, fundingAxis2, coun
 boolean fundingScaleLinLog; // true=linear false=log
 float fundingAxisLogBase;
 
+ArrayList<Country> countries;
+ArrayList<Transaction> transactions;
+ArrayList<Agency> agencies;
+
+
 /*////////////////////////////////////////
  SETUP
  ////////////////////////////////////////*/
@@ -43,7 +49,7 @@ void setup() {
   // size(1080, 1080, PDF, generateSaveImgFileName(".pdf"));
   // Regular output
   // size(7020,4965); // 150 dpi for A0 size paper
-  size(1920, 920); // 150 dpi for A0 size paper
+  size(1280, 720); // 150 dpi for A0 size paper
   smooth(8);
   setPositioningVariables();
   rSn = 47; // 4,7,11,18,29...;
@@ -87,6 +93,13 @@ void setup() {
     if ( currAmtVal < countryExpendMin) countryExpendMin = currAmtVal; // this could be a negative value!
   }
 
+  // Prep ArrayList
+  countries = new ArrayList<Country>();
+  transactions = new ArrayList<Transaction>();
+  agencies = new ArrayList<Agency>();
+
+
+
   // Font Stuff
   // titleF = loadFont("HelveticaNeue-Thin-72.vlw");
   mainTitleF = createFont("HelveticaNeue-Thin", 48, true);  //requires a font file in the data folder?
@@ -117,20 +130,20 @@ void draw() {
 
     float barChartW = map(row.getFloat("Amount"), 0, countryExpendMax, 0, PLOT_X2-countryAxis1.x);
 
-    fill(barChartClr);
+    fill(barChartClr, 123);
     noStroke();
-    rect(tx, ty, barChartW, 5);
+    rect(tx, ty, barChartW, 2);
   }
 
   // add agency names
-   rowCounter=0;
+  rowCounter=0;
   for (TableRow row : agencyExpenditureTotalTbl.rows()) {
     // float tx = countryAxis1.x + 18;
     // float ty = map(rowCounter+=1, 0, expenditureByCountryTbl.getRowCount(), PLOT_Y1, PLOT_Y2);
     float tx = map(rowCounter+=1, 0, agencyExpenditureTotalTbl.getRowCount(), agencyAxis1.x, agencyAxis2.x);
     float ty = agencyAxis1.y+20;
     pushMatrix();
-    translate(tx,ty);
+    translate(tx, ty);
     rotate(HALF_PI/2);
     fill(unBlueClr, 199);
     text(row.getString("Agency"), 0, 0);
@@ -149,47 +162,47 @@ void draw() {
   for (int i=0; i < agencyCountryTbl.getRowCount(); i++) {
     TableRow agencyCountryRow = agencyCountryTbl.getRow(i);
     int  currAmtVal= agencyCountryRow.getInt("Amount");
-    if(currAmtVal>0){
-    int currAgencyOrd = agencyExpenditureTotalTbl.findRowIndex(agencyCountryRow.getString("Agency"), "Agency");
-    agencyX = map(currAgencyOrd, 0, agencyExpenditureTotalTbl.getRowCount()-1, agencyAxis1.x, agencyAxis2.x);
-    agencyY = agencyAxis1.y;
+    if (currAmtVal>0) {
+      int currAgencyOrd = agencyExpenditureTotalTbl.findRowIndex(agencyCountryRow.getString("Agency"), "Agency");
+      agencyX = map(currAgencyOrd, 0, agencyExpenditureTotalTbl.getRowCount()-1, agencyAxis1.x, agencyAxis2.x);
+      agencyY = agencyAxis1.y;
 
-    int currCountryOrd = expenditureByCountryTbl.findRowIndex(agencyCountryRow.getString("Country"), "Country");
-    // countryX = map(currCountryOrd, 0, expenditureByCountryTbl.getRowCount(), countryAxis2.x, countryAxis1.x);
-    // countryY = countryAxis1.y;
-    countryX = countryAxis1.x;
-    countryY = map(currCountryOrd, 0, expenditureByCountryTbl.getRowCount(), countryAxis1.y, countryAxis2.y);
+      int currCountryOrd = expenditureByCountryTbl.findRowIndex(agencyCountryRow.getString("Country"), "Country");
+      // countryX = map(currCountryOrd, 0, expenditureByCountryTbl.getRowCount(), countryAxis2.x, countryAxis1.x);
+      // countryY = countryAxis1.y;
+      countryX = countryAxis1.x;
+      countryY = map(currCountryOrd, 0, expenditureByCountryTbl.getRowCount(), countryAxis1.y, countryAxis2.y);
 
-    fundingX = fundingAxis1.x;
+      fundingX = fundingAxis1.x;
 
-    if (fundingScaleLinLog) {
-      fundingY = map(currAmtVal, transactionMax, transactionMin, fundingAxis1.y, fundingAxis2.y); // change transactionMax to funding order of magnitude max.
-    }else{
-      fundingY = powMap(currAmtVal, fundingAxisLogBase, transactionMax, transactionMin, fundingAxis1.y, fundingAxis2.y);
-    }
-    float fundingAlpha = powMap(currAmtVal, Math.E, transactionMax, transactionMin, 255, 47);
+      if (fundingScaleLinLog) {
+        fundingY = map(currAmtVal, transactionMax, transactionMin, fundingAxis1.y, fundingAxis2.y); // change transactionMax to funding order of magnitude max.
+      } else {
+        fundingY = powMap(currAmtVal, fundingAxisLogBase, transactionMax, transactionMin, fundingAxis1.y, fundingAxis2.y);
+      }
+      float fundingAlpha = powMap(currAmtVal, Math.E, transactionMax, transactionMin, 255, 47);
 
-    noFill();
-    // fill(199,199,0,11);
-    stroke(transactionCurveClr, fundingAlpha);
-    strokeWeight(.33);
-    beginShape();
-    curveVertex(agencyX, agencyY+750); // first control point
-    curveVertex(agencyX, agencyY); // also the first data point
-    curveVertex(fundingX, fundingY);
-    curveVertex(countryX, countryY);
-    curveVertex(countryX+1000, countryY-500); // ending control point
-    endShape();
-    // stroke(1);
-    fill(199, 199, 0);
-    noStroke();
-    // ellipse(fundingX-1, fundingY-1, 2, 2);
+      noFill();
+      // fill(199,199,0,11);
+      stroke(transactionCurveClr, fundingAlpha);
+      strokeWeight(.33);
+      beginShape();
+      curveVertex(agencyX, agencyY+750); // first control point
+      curveVertex(agencyX, agencyY); // also the first data point
+      curveVertex(fundingX, fundingY);
+      curveVertex(countryX, countryY);
+      curveVertex(countryX+1000, countryY-500); // ending control point
+      endShape();
+      // stroke(1);
+      fill(199, 199, 0);
+      noStroke();
+      // ellipse(fundingX-1, fundingY-1, 2, 2);
     }
   }
 
 
   renderAxes();
-renderFundingAxisScaleMarkers();
+  renderFundingAxisScaleMarkers();
   if (recording) saveFrame("MM_output/" + getSketchName() + "-#####.png");
 }
 
@@ -234,14 +247,12 @@ void renderAxes() {
   rotate(-HALF_PI);
   text("Funding", 0, 0);
   popMatrix();
-  
 }
 
 void keyPressed() {
   if (key == 'S') screenCap(".jpg");
   if (key == 'L') fundingScaleLinLog = true;
   if (key == 'l') fundingScaleLinLog = false;
-
 }
 
 String generateSaveImgFileName(String fileType) {
@@ -310,12 +321,11 @@ void renderFundingAxisScaleMarkers() {
   // println("numTicks: " + numTicks);
   // println("maxTickVal: " + maxTickVal);
   for (int i = (int)numTicks; i > 1; i--) {
-  
-float currTickVal = pow(10, i);
+
+    float currTickVal = pow(10, i);
     if (fundingScaleLinLog) {
       // Linear scale please!
       tickY = map(currTickVal, (int)maxTickVal, transactionMin, fundingAxis1.y, fundingAxis2.y);
-
     } else {
       // Log scale pfv
       tickY = powMap((int)currTickVal, fundingAxisLogBase, (int)maxTickVal, transactionMin, fundingAxis1.y, fundingAxis2.y);
@@ -336,7 +346,7 @@ float currTickVal = pow(10, i);
 }
 
 
-float getHigherOrderOfMag(float _n){
+float getHigherOrderOfMag(float _n) {
   float n = _n;
   float roundUpLogTen = ceil(log(n)/log(10));
   float higher = pow(10, roundUpLogTen);
@@ -344,10 +354,50 @@ float getHigherOrderOfMag(float _n){
   return higher;
 }
 
-float getLowerOrderOfMag(float _n){
+float getLowerOrderOfMag(float _n) {
   float n = _n;
   float roundLogTen = floor(log(n)/log(10));
   float lower = pow(10, roundLogTen);
   // println(n + " becomes " + lower);
   return lower;
+}
+
+
+//// some utility functions for managing objects in arraylists
+Country findCountryByName(String name) {    
+  for (Country country : countries) {
+    if (country.name == name) {
+      return country;
+    }
+  }
+  return null;
+}
+
+Agency findAgencyByName(String name) {    
+  for (Agency agency : agencies) {
+    if (agency.name == name) {
+      return agency;
+    }
+  }
+  return null;
+}
+
+ArrayList<Transaction> transactionCollectionByCountry(String countryName) {    
+  ArrayList<Transaction> transactionCollection = new ArrayList<Transaction>();
+  for (Transaction currTransaction : transactions) {
+    if (currTransaction.countryName == countryName) {
+      transactionCollection.add(currTransaction);
+    }
+  }
+  return transactionCollection;
+}
+
+ArrayList<Transaction> transactionCollectionByAgency(String agencyAbbrev) {    
+  ArrayList<Transaction> tColl = new ArrayList<Transaction>();
+  for (Transaction t : transactions) {
+    if (t.unAgencyAbbrev == agencyAbbrev) {
+      tColl.add(t);
+    }
+  }
+  return tColl;
 }
