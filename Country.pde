@@ -12,12 +12,16 @@ public class Country {
 
     currLoc = new PVector();
     targLoc = new PVector();
-    countryTransactions = transactionCollectionByCountry(countryName);
+    
   }
 
   void update() {
   }
 
   void render() {
+  }
+
+  void setCountryTransactionList(){
+    countryTransactions = transactionCollectionByCountry(countryName);
   }
 }

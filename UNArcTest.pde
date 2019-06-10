@@ -108,8 +108,6 @@ void setup() {
     Transaction newTransaction = new Transaction(currYear, currCountryName, currAmount, currAgency);
     transactions.add(newTransaction);
   }
-  println("transactions.size() = " + transactions.size());
-  println(transactions.get(1));
 
   for (int i=0; i < expenditureByCountryTbl.getRowCount(); i++) {
     TableRow countryRow = expenditureByCountryTbl.getRow(i);
@@ -119,9 +117,6 @@ void setup() {
     Country newCountry = new Country(currYear, currCountryName, currAmount);
     countries.add(newCountry);
   }
-  println("countries.size() = " + countries.size());
-  println(countries.get(1));
-
 
   for (int i=0; i < agencyExpenditureTotalTbl.getRowCount(); i++) {
     TableRow agencyRow = agencyExpenditureTotalTbl.getRow(i);
@@ -131,9 +126,24 @@ void setup() {
     Agency newAgency = new Agency(currYear, currAgencyUNAbbrev, currAmount);
     agencies.add(newAgency);
   }
-  println("agencies.size() = " + agencies.size());
 
+// Set references between objects
+println("setting transaction references");
+for (Transaction currTrans : transactions) {
+  currTrans.setTransactionCountry();
+  currTrans.setTransactionAgency();
+}
 
+println("setting agency references");
+for (Agency currAgency : agencies) {
+  currAgency.setAgencyTransactionList();
+}
+
+println("setting country references");
+for (Country currCnty : countries) {
+  currCnty.setCountryTransactionList();
+  
+}
   // Font Stuff
   // titleF = loadFont("HelveticaNeue-Thin-72.vlw");
   mainTitleF = createFont("HelveticaNeue-Thin", 48, true);  //requires a font file in the data folder?
@@ -189,6 +199,12 @@ void draw() {
   text("UN Agency Expenditures \nby Country \nin 2015", PLOT_X1, PLOT_Y1+textAscent());
 
   // render the arcs
+  // for (Transaction currTrans : transactions) {
+  //   if(currTrans.amount > 0){
+  //     currTrans.render();
+  //   }
+  // } 
+
   strokeWeight(.25); 
   for (int i=0; i < agencyCountryTbl.getRowCount(); i++) {
     TableRow agencyCountryRow = agencyCountryTbl.getRow(i);
@@ -388,9 +404,11 @@ Country findCountryByName(String _cName) {
   return null;
 }
 
-Agency findAgencyByName(String name) {    
+Agency findAgencyByUnAbbrev(String _unAbbrev) { 
+  String unAbbrev = _unAbbrev;
+//   println("in findAgencyByUnAbbrev()\nagencies.size(): "+agencies.size());
   for (Agency agency : agencies) {
-    if (agency.agencyName.equals(name)) {
+    if (agency.unAgencyAbbrev.equals(unAbbrev)) {
       return agency;
     }
   }

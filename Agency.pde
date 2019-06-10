@@ -14,8 +14,6 @@ public class Agency {
     expenditure = _expenditure;
     currLoc = new PVector();
     targLoc = new PVector();
-
-    agencyTransactions = transactionCollectionByAgency(unAgencyAbbrev);
   }
 
 
@@ -24,5 +22,9 @@ public class Agency {
 
 
   void render() {
+  }
+
+  void setAgencyTransactionList(){
+    agencyTransactions = transactionCollectionByAgency(unAgencyAbbrev);
   }
 }
