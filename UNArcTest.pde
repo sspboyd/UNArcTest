@@ -98,6 +98,40 @@ void setup() {
   transactions = new ArrayList<Transaction>();
   agencies = new ArrayList<Agency>();
 
+  // Populate ArrayLists
+  for (int i=0; i < agencyCountryTbl.getRowCount(); i++) {
+    TableRow agencyCountryRow = agencyCountryTbl.getRow(i);
+    int     currYear= agencyCountryRow.getInt("Year");
+    String  currCountryName= agencyCountryRow.getString("Country");
+    float   currAmount= agencyCountryRow.getFloat("Amount");
+    String  currAgency= agencyCountryRow.getString("Agency");
+    Transaction newTransaction = new Transaction(currYear, currCountryName, currAmount, currAgency);
+    transactions.add(newTransaction);
+  }
+  println("transactions.size() = " + transactions.size());
+  println(transactions.get(1));
+
+  for (int i=0; i < expenditureByCountryTbl.getRowCount(); i++) {
+    TableRow countryRow = expenditureByCountryTbl.getRow(i);
+    int     currYear= countryRow.getInt("Year");
+    String  currCountryName= countryRow.getString("Country");
+    float   currAmount= countryRow.getFloat("Amount");
+    Country newCountry = new Country(currYear, currCountryName, currAmount);
+    countries.add(newCountry);
+  }
+  println("countries.size() = " + countries.size());
+  println(countries.get(1));
+
+
+  for (int i=0; i < agencyExpenditureTotalTbl.getRowCount(); i++) {
+    TableRow agencyRow = agencyExpenditureTotalTbl.getRow(i);
+    int     currYear = 2015; // hard coding year val....
+    String  currAgencyUNAbbrev= agencyRow.getString("Agency");
+    float   currAmount= agencyRow.getFloat("Expenditure");
+    Agency newAgency = new Agency(currYear, currAgencyUNAbbrev, currAmount);
+    agencies.add(newAgency);
+  }
+  println("agencies.size() = " + agencies.size());
 
 
   // Font Stuff
@@ -105,9 +139,8 @@ void setup() {
   mainTitleF = createFont("HelveticaNeue-Thin", 48, true);  //requires a font file in the data folder?
   axesLabelF = createFont("Helvetica", 11);  //requires a font file in the data folder?
 
-  println("agencyCountryTbl row count = " + agencyCountryTbl.getRowCount());
-  println("expenditureByCountryTbl row count = " + expenditureByCountryTbl.getRowCount());
-  println("agencyExpenditureTotalTbl row count = " + agencyExpenditureTotalTbl.getRowCount());
+  test_CountryObj("Lebanon");
+
   println("setup done: " + nf(millis() / 1000.0, 1, 2));
 }
 
@@ -138,8 +171,6 @@ void draw() {
   // add agency names
   rowCounter=0;
   for (TableRow row : agencyExpenditureTotalTbl.rows()) {
-    // float tx = countryAxis1.x + 18;
-    // float ty = map(rowCounter+=1, 0, expenditureByCountryTbl.getRowCount(), PLOT_Y1, PLOT_Y2);
     float tx = map(rowCounter+=1, 0, agencyExpenditureTotalTbl.getRowCount(), agencyAxis1.x, agencyAxis2.x);
     float ty = agencyAxis1.y+20;
     pushMatrix();
@@ -168,8 +199,6 @@ void draw() {
       agencyY = agencyAxis1.y;
 
       int currCountryOrd = expenditureByCountryTbl.findRowIndex(agencyCountryRow.getString("Country"), "Country");
-      // countryX = map(currCountryOrd, 0, expenditureByCountryTbl.getRowCount(), countryAxis2.x, countryAxis1.x);
-      // countryY = countryAxis1.y;
       countryX = countryAxis1.x;
       countryY = map(currCountryOrd, 0, expenditureByCountryTbl.getRowCount(), countryAxis1.y, countryAxis2.y);
 
@@ -183,7 +212,6 @@ void draw() {
       float fundingAlpha = powMap(currAmtVal, Math.E, transactionMax, transactionMin, 255, 47);
 
       noFill();
-      // fill(199,199,0,11);
       stroke(transactionCurveClr, fundingAlpha);
       strokeWeight(.33);
       beginShape();
@@ -193,10 +221,8 @@ void draw() {
       curveVertex(countryX, countryY);
       curveVertex(countryX+1000, countryY-500); // ending control point
       endShape();
-      // stroke(1);
       fill(199, 199, 0);
       noStroke();
-      // ellipse(fundingX-1, fundingY-1, 2, 2);
     }
   }
 
@@ -217,11 +243,6 @@ void updateAxes() {
   agencyAxis1.y = PLOT_Y2;
   agencyAxis2.x = PLOT_X1 + (PLOT_W*(1-PHI))-50;
   agencyAxis2.y = PLOT_Y2;
-
-  // countryAxis1.x = PLOT_X1 + (PLOT_W * (1-PHI))+50;
-  // countryAxis1.y = PLOT_Y2;
-  // countryAxis2.x = PLOT_X2;
-  // countryAxis2.y = countryAxis1.y;
 
   countryAxis1.x = PLOT_X2- PLOT_W * (pow(PHI, 3));
   countryAxis1.y = PLOT_Y1;
@@ -284,9 +305,7 @@ String getSketchName() {
 
 
 // Exponential scale
-// float powMap(incr, base, start1, stop1, start2, stop2) {
 float powMap(int incr, double base, int start1, int stop1, float start2, float stop2) {
-  // base should be an inverse (eg 1/2), start1/stop1 are the value range, start2/stop2 are the output range
   float normX = map(incr, start1, stop1, 0, 1);
   float newX = pow(normX, (float)base);
   return map(newX, 0, 1, start2, stop2);
@@ -329,19 +348,13 @@ void renderFundingAxisScaleMarkers() {
     } else {
       // Log scale pfv
       tickY = powMap((int)currTickVal, fundingAxisLogBase, (int)maxTickVal, transactionMin, fundingAxis1.y, fundingAxis2.y);
-      // tickY = powMap((int)currTickVal, Math.E, (int)maxTickVal, transactionMin, fundingAxis1.y, fundingAxis2.y);
     }
     // place tick 
     stroke(transactionCurveClr);
     line(tickX, tickY, tickX-10, tickY);
     // place text
-    // textFont();
     fill(transactionCurveClr);
     text((int)currTickVal, tickX-200, tickY);
-
-    // fundingScaleTickVal = fundingScaleTickVal-1;
-    // println("fundingScaleTickVal = " + fundingScaleTickVal);
-    // fundingScaleTickVal = getLowerOrderOfMag(fundingScaleTickVal);
   }
 }
 
@@ -364,9 +377,11 @@ float getLowerOrderOfMag(float _n) {
 
 
 //// some utility functions for managing objects in arraylists
-Country findCountryByName(String name) {    
+Country findCountryByName(String _cName) {
+  String cName = _cName;
+
   for (Country country : countries) {
-    if (country.name == name) {
+    if (country.countryName.equals(cName)) {
       return country;
     }
   }
@@ -375,7 +390,7 @@ Country findCountryByName(String name) {
 
 Agency findAgencyByName(String name) {    
   for (Agency agency : agencies) {
-    if (agency.name == name) {
+    if (agency.agencyName.equals(name)) {
       return agency;
     }
   }
@@ -385,7 +400,7 @@ Agency findAgencyByName(String name) {
 ArrayList<Transaction> transactionCollectionByCountry(String countryName) {    
   ArrayList<Transaction> transactionCollection = new ArrayList<Transaction>();
   for (Transaction currTransaction : transactions) {
-    if (currTransaction.countryName == countryName) {
+    if (currTransaction.countryName.equals(countryName)) {
       transactionCollection.add(currTransaction);
     }
   }
@@ -395,9 +410,31 @@ ArrayList<Transaction> transactionCollectionByCountry(String countryName) {
 ArrayList<Transaction> transactionCollectionByAgency(String agencyAbbrev) {    
   ArrayList<Transaction> tColl = new ArrayList<Transaction>();
   for (Transaction t : transactions) {
-    if (t.unAgencyAbbrev == agencyAbbrev) {
+    if (t.unAgencyAbbrev.equals(agencyAbbrev)) {
       tColl.add(t);
     }
   }
   return tColl;
+}
+
+
+void test_CountryObj(String _cName) {
+  String cName = _cName;
+  Country currCountry = findCountryByName(cName);
+
+  String output = "------- ---- ---";
+  output += "\n"+currCountry;
+  output += "\nCountry name: " + currCountry.countryName;
+  output += "\nyear: " + currCountry.year;
+  output += "\namount: " + currCountry.amount;
+
+  // print out country name, year, amount and
+  // every transaction showing agency and amount
+  output += "\n";
+  output += "\nAll transactions for " + currCountry.countryName;
+
+  for (Transaction currTrans : currCountry.countryTransactions) {
+    output += "\n"+currTrans.unAgencyAbbrev + ": " + currTrans.amount;
+  }
+  println(output);
 }
