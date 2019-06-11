@@ -5,6 +5,8 @@ public class Transaction {
   float amount;
   String unAgencyAbbrev;
   Agency agency;
+  color transLineClr, transMarkerClr;
+  float transAlphaVal;
 
   PVector agencyLoc, amountLoc, countryLoc; // make getters/setters for these
   PVector agencyLocTarg, amountLocTarg, countryLocTarg; // make getters/setters for these
@@ -22,59 +24,44 @@ public class Transaction {
     agencyLocTarg = new PVector();
     amountLocTarg = new PVector();
     countryLocTarg = new PVector();
+
+    transLineClr = color(0);
+    transMarkerClr =color(0);
+    transAlphaVal = 255;
   }
 
   void update() {
-    agencyLoc = agency.currLoc;
-    countryLoc = country.currLoc;
-    // amountLoc = amount.currLoc; //
+    // agencyLoc = agency.currLoc; // don't think I need these, just reference the object directly
+    // countryLoc = country.currLoc;
+
+    amountLoc.x = fundingAxis1.x;
+
+    if (fundingScaleLinLog) {
+      amountLoc.y = map(amount, transactionMax, transactionMin, fundingAxis1.y, fundingAxis2.y); // change transactionMax to funding order of magnitude max.
+    } else {
+      amountLoc.y = powMap((int)amount, fundingAxisLogBase, transactionMax, transactionMin, fundingAxis1.y, fundingAxis2.y);
+    }
+    transAlphaVal = powMap((int)amount, Math.E, transactionMax, transactionMin, 255, 47);
   }
 
   void render() {
-    // agency.agencyLoc.x;
-    // agency.agencyLoc.y;
-    
-    // funding
-    
-    // country.countryLoc.x;
-    // country.countryLoc.y;
-
-    //   int currAgencyOrd = agencyExpenditureTotalTbl.findRowIndex(agencyCountryRow.getString("Agency"), "Agency");
-    //   agencyX = map(currAgencyOrd, 0, agencyExpenditureTotalTbl.getRowCount()-1, agencyAxis1.x, agencyAxis2.x);
-    //   agencyY = agencyAxis1.y;
-
-    //   int currCountryOrd = expenditureByCountryTbl.findRowIndex(agencyCountryRow.getString("Country"), "Country");
-    //   countryX = countryAxis1.x;
-    //   countryY = map(currCountryOrd, 0, expenditureByCountryTbl.getRowCount(), countryAxis1.y, countryAxis2.y);
-
-    //   fundingX = fundingAxis1.x;
-
-    //   if (fundingScaleLinLog) {
-    //     fundingY = map(currAmtVal, transactionMax, transactionMin, fundingAxis1.y, fundingAxis2.y); // change transactionMax to funding order of magnitude max.
-    //   } else {
-    //     fundingY = powMap(currAmtVal, fundingAxisLogBase, transactionMax, transactionMin, fundingAxis1.y, fundingAxis2.y);
-    //   }
-    //   float fundingAlpha = powMap(currAmtVal, Math.E, transactionMax, transactionMin, 255, 47);
-
-    //   noFill();
-    //   stroke(transactionCurveClr, fundingAlpha);
-    //   strokeWeight(.33);
-    //   beginShape();
-    //   curveVertex(agencyX, agencyY+750); // first control point
-    //   curveVertex(agencyX, agencyY); // also the first data point
-    //   curveVertex(fundingX, fundingY);
-    //   curveVertex(countryX, countryY);
-    //   curveVertex(countryX+1000, countryY-500); // ending control point
-    //   endShape();
-    //   fill(199, 199, 0);
-    //   noStroke();
+    noFill();
+    stroke(transLineClr, transAlphaVal);
+    strokeWeight(.33);
+    beginShape();
+    curveVertex(agency.currLoc.x, agency.currLoc.y+750); // first control point
+    curveVertex(agency.currLoc.x, agency.currLoc.y); // also the first data point
+    curveVertex(amountLoc.x, amountLoc.y);
+    curveVertex(country.currLoc.x, country.currLoc.y);
+    curveVertex(country.currLoc.x+1000, country.currLoc.y-500); // ending control point
+    endShape();
   }
 
-  void setTransactionCountry(){
+  void setTransactionCountry() {
     country = findCountryByName(countryName);
   }
-  
-  void setTransactionAgency(){
+
+  void setTransactionAgency() {
     agency = findAgencyByUnAbbrev(unAgencyAbbrev);
   }
 }
