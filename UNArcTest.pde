@@ -39,9 +39,9 @@ ArrayList<Transaction> transactions;
 ArrayList<Agency> agencies;
 
 
-/*////////////////////////////////////////
+/*////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
  SETUP
- ////////////////////////////////////////*/
+ ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////*/
 
 void setup() {
   background(255);
@@ -127,36 +127,36 @@ void setup() {
     agencies.add(newAgency);
   }
 
-// Set references between objects
-println("setting transaction references");
-for (Transaction currTrans : transactions) {
-  currTrans.setTransactionCountry();
-  currTrans.setTransactionAgency();
-}
+  // Set references between objects
+  println("setting transaction references");
+  for (Transaction currTrans : transactions) {
+    currTrans.setTransactionCountry();
+    currTrans.setTransactionAgency();
+  }
 
-println("setting agency references");
-for (Agency currAgency : agencies) {
-  currAgency.setAgencyTransactionList();
-}
+  println("setting agency references");
+  for (Agency currAgency : agencies) {
+    currAgency.setAgencyTransactionList();
+  }
 
-println("setting country references");
-for (Country currCnty : countries) {
-  currCnty.setCountryTransactionList();
-  
-}
+  println("setting country references");
+  for (Country currCnty : countries) {
+    currCnty.setCountryTransactionList();
+  }
   // Font Stuff
   // titleF = loadFont("HelveticaNeue-Thin-72.vlw");
   mainTitleF = createFont("HelveticaNeue-Thin", 48, true);  //requires a font file in the data folder?
   axesLabelF = createFont("Helvetica", 11);  //requires a font file in the data folder?
 
   test_CountryObj("Lebanon");
+  test_AgencyObj("UNICEF");
 
   println("setup done: " + nf(millis() / 1000.0, 1, 2));
 }
 
-/*////////////////////////////////////////
+/*////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
  DRAW
- ////////////////////////////////////////*/
+ ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////*/
 
 void draw() {
   background(chartBkgClr);
@@ -406,7 +406,7 @@ Country findCountryByName(String _cName) {
 
 Agency findAgencyByUnAbbrev(String _unAbbrev) { 
   String unAbbrev = _unAbbrev;
-//   println("in findAgencyByUnAbbrev()\nagencies.size(): "+agencies.size());
+  //   println("in findAgencyByUnAbbrev()\nagencies.size(): "+agencies.size());
   for (Agency agency : agencies) {
     if (agency.unAgencyAbbrev.equals(unAbbrev)) {
       return agency;
@@ -453,6 +453,22 @@ void test_CountryObj(String _cName) {
 
   for (Transaction currTrans : currCountry.countryTransactions) {
     output += "\n"+currTrans.unAgencyAbbrev + ": " + currTrans.amount;
+  }
+  println(output);
+}
+
+void test_AgencyObj(String _ag) {
+  String ag = _ag;
+  Agency currAg = findAgencyByUnAbbrev(ag);
+
+  String output = "------- ---- ---";
+  output += "\n"+currAg;
+  output += "\nAgency name: " + currAg.unAgencyAbbrev;
+  output += "\nyear: " + currAg.year;
+  output += "\namount: " + currAg.expenditure;
+
+  for (Transaction t : currAg.agencyTransactions) {
+    output += "\n"+t.countryName + ": " + t.amount;
   }
   println(output);
 }
