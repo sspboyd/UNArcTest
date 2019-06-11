@@ -55,16 +55,6 @@ void setup() {
   rSn = 47; // 4,7,11,18,29...;
   randomSeed(rSn);
 
-  agencyAxis1 = new PVector();
-  agencyAxis2 = new PVector();
-
-  fundingAxis1 = new PVector();
-  fundingAxis2 = new PVector();
-  fundingScaleLinLog = false; // true=linear false=log
-  fundingAxisLogBase = 10;
-  countryAxis1 = new PVector();
-  countryAxis2 = new PVector();
-
   // load data
   agencyCountryTbl = loadTable("Agency_Expenditure_by_Country_2015.csv", "header");
   expenditureByCountryTbl = loadTable("Total_Expenditure_by_Country.csv", "header");
@@ -143,6 +133,19 @@ void setup() {
   for (Country currCnty : countries) {
     currCnty.setCountryTransactionList();
   }
+
+  // Initialize Axes
+  agencyAxis1 = new PVector();
+  agencyAxis2 = new PVector();
+
+  fundingAxis1 = new PVector();
+  fundingAxis2 = new PVector();
+  fundingScaleLinLog = false; // true=linear false=log
+  fundingAxisLogBase = 10;
+  countryAxis1 = new PVector();
+  countryAxis2 = new PVector();
+
+
   // Font Stuff
   // titleF = loadFont("HelveticaNeue-Thin-72.vlw");
   mainTitleF = createFont("HelveticaNeue-Thin", 48, true);  //requires a font file in the data folder?
@@ -161,6 +164,7 @@ void setup() {
 void draw() {
   background(chartBkgClr);
   updateAxes();
+  
   float agencyX, agencyY, fundingX, fundingY, countryX, countryY;
 
   // add country names
@@ -179,16 +183,9 @@ void draw() {
   }
 
   // add agency names
-  rowCounter=0;
-  for (TableRow row : agencyExpenditureTotalTbl.rows()) {
-    float tx = map(rowCounter+=1, 0, agencyExpenditureTotalTbl.getRowCount(), agencyAxis1.x, agencyAxis2.x);
-    float ty = agencyAxis1.y+20;
-    pushMatrix();
-    translate(tx, ty);
-    rotate(HALF_PI/2);
-    fill(unBlueClr, 199);
-    text(row.getString("Agency"), 0, 0);
-    popMatrix();
+  for (Agency ag : agencies) {
+    ag.update();
+    ag.render();  
   }
 
   // Render chart title
@@ -391,8 +388,10 @@ float getLowerOrderOfMag(float _n) {
   return lower;
 }
 
+/*////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+ ARRAYLIST UTILITIES
+ ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////*/
 
-//// some utility functions for managing objects in arraylists
 Country findCountryByName(String _cName) {
   String cName = _cName;
 
@@ -435,6 +434,10 @@ ArrayList<Transaction> transactionCollectionByAgency(String agencyAbbrev) {
   return tColl;
 }
 
+
+/*////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+ Tests
+ ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////*/
 
 void test_CountryObj(String _cName) {
   String cName = _cName;
