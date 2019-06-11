@@ -151,8 +151,9 @@ void setup() {
   mainTitleF = createFont("HelveticaNeue-Thin", 48, true);  //requires a font file in the data folder?
   axesLabelF = createFont("Helvetica", 11);  //requires a font file in the data folder?
 
-  test_CountryObj("Lebanon");
-  test_AgencyObj("UNICEF");
+  // Run tests
+  // test_CountryObj("Lebanon");
+  // test_AgencyObj("UNICEF");
 
   println("setup done: " + nf(millis() / 1000.0, 1, 2));
 }
@@ -164,28 +165,23 @@ void setup() {
 void draw() {
   background(chartBkgClr);
   updateAxes();
-  
+
   float agencyX, agencyY, fundingX, fundingY, countryX, countryY;
 
   // add country names
-  int rowCounter=0;
-  for (TableRow row : expenditureByCountryTbl.rows()) {
-    float tx = countryAxis1.x + 18;
-    float ty = map(rowCounter+=1, 0, expenditureByCountryTbl.getRowCount(), PLOT_Y1, PLOT_Y2);
-    fill(countryLabelClr);
-    text(row.getString("Country"), tx, ty);
+  // renderBarChart();
 
-    float barChartW = map(row.getFloat("Amount"), 0, countryExpendMax, 0, PLOT_X2-countryAxis1.x);
-
-    fill(barChartClr, 123);
-    noStroke();
-    rect(tx, ty, barChartW, 2);
-  }
 
   // add agency names
   for (Agency ag : agencies) {
     ag.update();
-    ag.render();  
+    ag.render();
+  }
+
+  // add agency names
+  for (Country cty : countries) {
+    cty.update();
+    cty.render();
   }
 
   // Render chart title
@@ -337,8 +333,6 @@ void setPositioningVariables() {
 }
 
 
-
-
 void renderFundingAxisScaleMarkers() {
   float maxTickVal = getHigherOrderOfMag(transactionMax);
   // 0, 10, 100, 1,000, 10,000, 100,000, 1,000,000, 10,000,000, 100,000,000, 1,000,000,000
@@ -387,6 +381,20 @@ float getLowerOrderOfMag(float _n) {
   // println(n + " becomes " + lower);
   return lower;
 }
+
+
+void renderBarChart() {
+  int rowCounter=0;
+  for (TableRow row : expenditureByCountryTbl.rows()) {
+    float tx = countryAxis1.x + 18;
+    float ty = map(rowCounter+=1, 0, expenditureByCountryTbl.getRowCount(), PLOT_Y1, PLOT_Y2);
+    float barChartW = map(row.getFloat("Amount"), 0, countryExpendMax, 0, PLOT_X2-countryAxis1.x);
+    fill(barChartClr, 123);
+    noStroke();
+    rect(tx, ty, barChartW, 2);
+  }
+}
+
 
 /*////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
  ARRAYLIST UTILITIES
