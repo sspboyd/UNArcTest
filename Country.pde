@@ -5,6 +5,7 @@ public class Country {
   PVector currLoc, targLoc; // getter/setter?
   ArrayList<Transaction> countryTransactions = new ArrayList<Transaction>();
   color ctyMarkerClr, ctyTextClr;
+  boolean hover;
 
   public Country (int _yr, String _countryName, float _amt) {
     countryName = _countryName;
@@ -16,7 +17,28 @@ public class Country {
 
     ctyMarkerClr = unBlueClr;
     ctyTextClr = unBlueClr;
+
+    hover = false;
   }
+
+  void checkHover() {
+    if (currLoc.dist(new PVector(mouseX, mouseY)) < 5) {
+      hover = true;
+      univHover = true;
+    } else {
+      hover = false;
+    }
+  }
+
+  void updateStyle() {
+    if (univHover) { // if true, then set this object to either highlighted or faded style
+      if (hover) { // true, highlighted style
+      } else { // false, fade style
+      }
+    } else { // false, default style
+    }
+  }
+
 
   void update() {
     // update the position

@@ -5,8 +5,14 @@ public class Transaction {
   float amount;
   String unAgencyAbbrev;
   Agency agency;
+  boolean hover;
+
+  // Style Info
+  // Normal, Faded, Highlight
   color transLineClr, transMarkerClr;
+  float transStrokeWeight;
   float transAlphaVal;
+
 
   PVector agencyLoc, amountLoc, countryLoc; // make getters/setters for these
   PVector agencyLocTarg, amountLocTarg, countryLocTarg; // make getters/setters for these
@@ -25,10 +31,45 @@ public class Transaction {
     amountLocTarg = new PVector();
     countryLocTarg = new PVector();
 
+    // Set to normal vals
     transLineClr = color(0);
     transMarkerClr =color(0);
-    transAlphaVal = 255;
+    transAlphaVal = powMap((int)amount, Math.E, transactionMax, transactionMin, 255, 47);
+    transStrokeWeight = .33;
+
+    hover = false;
   }
+
+  void checkHover() {
+    if (amountLoc.dist(new PVector(mouseX, mouseY))<4) {
+      hover = true;
+      univHover = true;
+    } else {
+      hover = false;
+    }
+  }
+
+  void updateStyle() {
+    if (univHover) { // if true, then set this object to either highlighted or faded style
+      if (hover) { // true, highlighted style
+        transLineClr = unBlueClr;
+        transMarkerClr = unBlueClr;
+        transAlphaVal = 255;
+        transStrokeWeight = 1;
+      } else { // false, fade style
+        transLineClr = color(0);
+        transMarkerClr =color(0);
+        transAlphaVal = 29;
+        transStrokeWeight = .29;
+      }
+    } else { // false, default style
+      transLineClr = color(0);
+      transMarkerClr =color(0);
+      transAlphaVal = powMap((int)amount, Math.E, transactionMax, transactionMin, 255, 47);
+      transStrokeWeight = .33;
+    }
+  }
+
 
   void update() {
     // agencyLoc = agency.currLoc; // don't think I need these, just reference the object directly
@@ -41,13 +82,12 @@ public class Transaction {
     } else {
       amountLoc.y = powMap((int)amount, fundingAxisLogBase, transactionMax, transactionMin, fundingAxis1.y, fundingAxis2.y);
     }
-    transAlphaVal = powMap((int)amount, Math.E, transactionMax, transactionMin, 255, 47);
   }
 
   void render() {
     noFill();
     stroke(transLineClr, transAlphaVal);
-    strokeWeight(.33);
+    strokeWeight(transStrokeWeight);
     beginShape();
     curveVertex(agency.currLoc.x, agency.currLoc.y+750); // first control point
     curveVertex(agency.currLoc.x, agency.currLoc.y); // also the first data point

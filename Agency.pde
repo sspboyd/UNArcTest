@@ -7,6 +7,8 @@ public class Agency {
   ArrayList<Transaction> agencyTransactions;
   PVector currLoc, targLoc; // getter/setter?
   color agMarkerClr, agTextClr;
+  boolean hover;
+
 
 
   public Agency (int _year, String _unAgencyAbbrev, float _expenditure) {
@@ -15,10 +17,28 @@ public class Agency {
     expenditure = _expenditure;
     currLoc = new PVector();
     targLoc = new PVector();
-    agMarkerClr = unBlueClr;
-    agTextClr = unBlueClr;
+    agMarkerClr = color(0);
+    agTextClr = color(0);
+    hover = false;
   }
 
+  void checkHover() {
+    if (currLoc.dist(new PVector(mouseX, mouseY)) < 10) {
+      hover = true;
+      univHover = true;
+    } else {
+      hover = false;
+    }
+  }
+
+  void updateStyle() {
+    if (univHover) { // if true, then set this object to either highlighted or faded style
+      if (hover) { // true, highlighted style
+      } else { // false, fade style
+      }
+    } else { // false, default style
+    }
+  }
 
   void update() {
     // update the position
@@ -27,9 +47,14 @@ public class Agency {
     currLoc.x = map(agencyRank, 0, agencyExpenditureTotalTbl.getRowCount()-1, agencyAxis1.x, agencyAxis2.x);
     currLoc.y = agencyAxis1.y;
 
-    // update the colour of marker and text style
-    agMarkerClr=unBlueClr;
-    agTextClr=unBlueClr;
+    if (currLoc.dist(new PVector(mouseX, mouseY)) < 10) {
+      // hover = true;
+      agTextClr = unBlueClr;
+      agMarkerClr = unBlueClr;
+    } else {
+      agTextClr = color(0);
+      agMarkerClr = color(0);
+    }
   }
 
 
@@ -44,7 +69,7 @@ public class Agency {
     popMatrix();
   }
 
-  void setAgencyTransactionList(){
+  void setAgencyTransactionList() {
     agencyTransactions = transactionCollectionByAgency(unAgencyAbbrev);
   }
 }

@@ -25,6 +25,8 @@ color axisClr = transactionCurveClr;
 color barChartClr = transactionCurveClr;
 color countryLabelClr = unBlueClr;
 
+boolean univHover = false;
+
 //// Declare Positioning Variables
 float margin;
 float PLOT_X1, PLOT_X2, PLOT_Y1, PLOT_Y2, PLOT_W, PLOT_H;
@@ -169,19 +171,37 @@ void draw() {
   // renderBarChart();
 
   // Render agency names
+  univHover = false;
+
   for (Agency ag : agencies) {
+    ag.checkHover();
+  }
+
+  // Render country names
+  for (Country cty : countries) {
+    cty.checkHover();
+  }
+
+  // Render transaction curves
+  for (Transaction t : transactions) {
+    t.checkHover();
+  }
+  for (Agency ag : agencies) {
+    ag.updateStyle();
     ag.update();
     ag.render();
   }
 
   // Render country names
   for (Country cty : countries) {
+    cty.updateStyle();
     cty.update();
     cty.render();
   }
 
   // Render transaction curves
   for (Transaction t : transactions) {
+    t.updateStyle();
     t.update();
     t.render();
   }
@@ -197,10 +217,6 @@ void draw() {
   renderFundingAxisScaleMarkers();
   if (recording) saveFrame("MM_output/" + getSketchName() + "-#####.png");
 }
-
-
-
-
 
 
 void updateAxes() {
@@ -232,7 +248,7 @@ void renderAxes() {
   noStroke();
   textFont(axesLabelF);
   // text("Countries", countryAxis1.x, countryAxis1.y + textAscent() + 5);
-  text("UN Agencies", agencyAxis1.x, agencyAxis1.y + textAscent() + 5);
+  // text("UN Agencies", agencyAxis1.x, agencyAxis1.y + textAscent() + 5);
   pushMatrix();
   translate(fundingAxis1.x+(textAscent()*2), fundingAxis1.y + ((fundingAxis2.y - fundingAxis1.y) * PHI));
   rotate(-HALF_PI);
