@@ -1,3 +1,6 @@
+import processing.pdf.*;
+boolean pdfRecord = false;
+
 // UN Funding by Agency and Country Arc Diagram Test
 
 ////Declare Globals
@@ -51,8 +54,8 @@ void setup() {
   // size(1080, 1080, PDF, generateSaveImgFileName(".pdf"));
   // Regular output
   // size(7020,4965); // 150 dpi for A0 size paper
-  size(2048, 1536); // iPad Air 2;
-  // size(1280, 920); // 150 dpi for A0 size paper
+  // size(2048, 1536); // iPad Air 2;
+  size(1280, 920); // 150 dpi for A0 size paper
   smooth(8);
   setPositioningVariables();
   rSn = 47; // 4,7,11,18,29...;
@@ -165,6 +168,10 @@ void setup() {
  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////*/
 
 void draw() {
+  if (pdfRecord) {
+    beginRecord(PDF, generateSaveImgFileName(".pdf"));
+  }
+
   background(chartBkgClr);
   updateAxes();
 
@@ -226,6 +233,11 @@ void draw() {
   renderAxes();
   renderFundingAxisScaleMarkers();
   if (recording) saveFrame("MM_output/" + getSketchName() + "-#####.png");
+
+  if (pdfRecord) {
+    endRecord();
+    pdfRecord = false;
+  }
 }
 
 
@@ -268,6 +280,7 @@ void renderAxes() {
 
 void keyPressed() {
   if (key == 'S') screenCap(".jpg");
+  if (key == 'P') pdfRecord = true;
   if (key == 'L') fundingScaleLinLog = true;
   if (key == 'l') fundingScaleLinLog = false;
 }
