@@ -5,14 +5,14 @@ public class Transaction {
   float amount;
   String unAgencyAbbrev;
   Agency agency;
-  boolean hover;
+  boolean hover; // mouse is hovering over 
+  boolean highlight; // change display to be the highlight mode. 
 
   // Style Info
   // Normal, Faded, Highlight
   color transLineClr, transMarkerClr;
   float transStrokeWeight;
   float transAlphaVal;
-
 
   PVector agencyLoc, amountLoc, countryLoc; // make getters/setters for these
   PVector agencyLocTarg, amountLocTarg, countryLocTarg; // make getters/setters for these
@@ -38,12 +38,22 @@ public class Transaction {
     transStrokeWeight = .33;
 
     hover = false;
+    highlight = false;
+  }
+
+  void resetHoverHighlight() { // feels a little hacky but lets get it working first and see. 
+    hover = false;
+    highlight = false;
   }
 
   void checkHover() {
     if (amountLoc.dist(new PVector(mouseX, mouseY))<4) {
       hover = true;
+      highlight = true;
       univHover = true;
+      // set related Agency and Country objects to highlight = true;
+      country.highlight = true;
+      agency.highlight = true;
     } else {
       hover = false;
     }
@@ -51,7 +61,7 @@ public class Transaction {
 
   void updateStyle() {
     if (univHover) { // if true, then set this object to either highlighted or faded style
-      if (hover) { // true, highlighted style
+      if (hover || highlight) { // true, highlighted style
         transLineClr = unBlueClr;
         transMarkerClr = unBlueClr;
         transAlphaVal = 255;
@@ -70,7 +80,6 @@ public class Transaction {
     }
   }
 
-
   void update() {
     // agencyLoc = agency.currLoc; // don't think I need these, just reference the object directly
     // countryLoc = country.currLoc;
@@ -88,6 +97,7 @@ public class Transaction {
     noFill();
     stroke(transLineClr, transAlphaVal);
     strokeWeight(transStrokeWeight);
+    curveTightness(.5);
     beginShape();
     curveVertex(agency.currLoc.x, agency.currLoc.y+750); // first control point
     curveVertex(agency.currLoc.x, agency.currLoc.y); // also the first data point

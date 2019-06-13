@@ -4,11 +4,12 @@ public class Agency {
   String agencyName;
   int year;
   float expenditure;
-  ArrayList<Transaction> agencyTransactions;
+  ArrayList<Transaction> agencyTransactions; // List of all the agency transactions
+  ArrayList<Country> agencyCountries; // countries the agency is active in
   PVector currLoc, targLoc; // getter/setter?
   color agMarkerClr, agTextClr;
-  boolean hover;
-
+  float agAlpha;
+  boolean hover, highlight;
 
 
   public Agency (int _year, String _unAgencyAbbrev, float _expenditure) {
@@ -20,12 +21,24 @@ public class Agency {
     agMarkerClr = color(0);
     agTextClr = color(0);
     hover = false;
+    highlight = false;
+    agAlpha = 255;
+  }
+
+  void resetHoverHighlight() {
+    hover = false;
+    highlight = false;
   }
 
   void checkHover() {
     if (currLoc.dist(new PVector(mouseX, mouseY)) < 10) {
       hover = true;
       univHover = true;
+      // set related Agency and Country objects to highlight = true;
+      for (Transaction agTran : agencyTransactions) {
+        agTran.highlight = true;
+        agTran.country.highlight = true;
+      }
     } else {
       hover = false;
     }
@@ -33,10 +46,17 @@ public class Agency {
 
   void updateStyle() {
     if (univHover) { // if true, then set this object to either highlighted or faded style
-      if (hover) { // true, highlighted style
+      if (hover || highlight) { // true, highlighted style
+        agTextClr = unBlueClr;
+        agMarkerClr = unBlueClr;
       } else { // false, fade style
+        agAlpha = 76;
+        agTextClr = color(0, agAlpha);
+        agMarkerClr = color(0, agAlpha);
       }
     } else { // false, default style
+      agTextClr = color(0);
+      agMarkerClr = color(0);
     }
   }
 
@@ -46,17 +66,7 @@ public class Agency {
     int agencyRank = agencyExpenditureTotalTbl.findRowIndex(unAgencyAbbrev, "Agency");
     currLoc.x = map(agencyRank, 0, agencyExpenditureTotalTbl.getRowCount()-1, agencyAxis1.x, agencyAxis2.x);
     currLoc.y = agencyAxis1.y;
-
-    if (currLoc.dist(new PVector(mouseX, mouseY)) < 10) {
-      // hover = true;
-      agTextClr = unBlueClr;
-      agMarkerClr = unBlueClr;
-    } else {
-      agTextClr = color(0);
-      agMarkerClr = color(0);
-    }
   }
-
 
   void render() {
     float textX = currLoc.x;

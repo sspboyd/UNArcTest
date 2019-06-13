@@ -23,7 +23,7 @@ color transactionCurveClr = color(0);
 color chartBkgClr = 255;
 color axisClr = transactionCurveClr;
 color barChartClr = transactionCurveClr;
-color countryLabelClr = unBlueClr;
+// color countryLabelClr = unBlueClr;
 
 boolean univHover = false;
 
@@ -51,7 +51,8 @@ void setup() {
   // size(1080, 1080, PDF, generateSaveImgFileName(".pdf"));
   // Regular output
   // size(7020,4965); // 150 dpi for A0 size paper
-  size(1280, 720); // 150 dpi for A0 size paper
+  size(2048, 1536); // iPad Air 2;
+  // size(1280, 920); // 150 dpi for A0 size paper
   smooth(8);
   setPositioningVariables();
   rSn = 47; // 4,7,11,18,29...;
@@ -139,7 +140,6 @@ void setup() {
   // Initialize Axes
   agencyAxis1 = new PVector();
   agencyAxis2 = new PVector();
-
   fundingAxis1 = new PVector();
   fundingAxis2 = new PVector();
   fundingScaleLinLog = false; // true=linear false=log
@@ -170,36 +170,46 @@ void draw() {
 
   // renderBarChart();
 
-  // Render agency names
+  // Reset hover and highlight values to off
   univHover = false;
+  for (Agency ag : agencies) {
+    ag.resetHoverHighlight();
+  }
 
+  for (Country cty : countries) {
+    cty.resetHoverHighlight();
+  }
+
+  for (Transaction t : transactions) {
+    t.resetHoverHighlight();
+  }
+
+  // check to see if the mouse is hovering over any objects
   for (Agency ag : agencies) {
     ag.checkHover();
   }
 
-  // Render country names
   for (Country cty : countries) {
     cty.checkHover();
   }
 
-  // Render transaction curves
   for (Transaction t : transactions) {
     t.checkHover();
   }
+
+  // Render the objects
   for (Agency ag : agencies) {
     ag.updateStyle();
     ag.update();
     ag.render();
   }
 
-  // Render country names
   for (Country cty : countries) {
     cty.updateStyle();
     cty.update();
     cty.render();
   }
 
-  // Render transaction curves
   for (Transaction t : transactions) {
     t.updateStyle();
     t.update();
@@ -210,8 +220,8 @@ void draw() {
   textFont(mainTitleF);
   // textFont(titleF, 144);
   fill(unBlueClr, 147);
-  text("UN Agency Expenditures \nby Country \nin 2015", PLOT_X1, PLOT_Y1+textAscent());
-
+  textAlign(LEFT);
+  text("$23 Billion USD\nUN Agency Expenditures \nby Country \nin 2015", PLOT_X1, PLOT_Y1+textAscent()*PHI);
 
   renderAxes();
   renderFundingAxisScaleMarkers();
@@ -323,7 +333,7 @@ void renderFundingAxisScaleMarkers() {
   float numTicks = floor(log(maxTickVal)/log(10));
   // println("numTicks: " + numTicks);
   // println("maxTickVal: " + maxTickVal);
-  for (int i = (int)numTicks; i > 1; i--) {
+  for (int i = (int)numTicks; i > 5; i--) {
 
     float currTickVal = pow(10, i);
     if (fundingScaleLinLog) {
@@ -333,13 +343,21 @@ void renderFundingAxisScaleMarkers() {
       // Log scale pfv
       tickY = powMap((int)currTickVal, fundingAxisLogBase, (int)maxTickVal, transactionMin, fundingAxis1.y, fundingAxis2.y);
     }
+
+    // tickX = map(i, numTicks, 0, PLOT_X1, fundingAxis1.x-0);
+    tickX = fundingAxis1.x-200;
     // place tick 
-    stroke(transactionCurveClr);
-    line(tickX, tickY, tickX-10, tickY);
+    stroke(unBlueClr, 123);
+    // line(tickX, tickY, tickX-10, tickY);
+    line(tickX, tickY, fundingAxis1.x, tickY);
     // place text
     fill(transactionCurveClr);
-    text((int)currTickVal, tickX-200, tickY);
+    textAlign(LEFT);
+    text("$"+nfc((int)currTickVal, 0), tickX, tickY+textAscent()+5);
   }
+  // mark the bottom of the funding axis with a $0 tick
+  text("$0", fundingAxis1.x - textWidth("$0 "), fundingAxis2.y+textAscent()+5);
+  line(fundingAxis1.x-10, fundingAxis2.y, fundingAxis1.x, fundingAxis2.y);
 }
 
 
@@ -418,6 +436,17 @@ ArrayList<Transaction> transactionCollectionByAgency(String agencyAbbrev) {
   }
   return tColl;
 }
+
+ArrayList<Country> countryListByAgency(String agencyAbbrev, String countryName) {
+  ArrayList<Country> countryList = new ArrayList<Country>();
+  for (Transaction t : transactions) {
+    if (t.unAgencyAbbrev.equals(agencyAbbrev) && (t.countryName.equals(countryName))) {
+      countryList.add(t.country);
+    }
+  }
+  return countryList;
+}
+
 
 
 /*////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
