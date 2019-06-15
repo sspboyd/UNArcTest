@@ -103,7 +103,7 @@ public class Transaction {
     curveVertex(agency.currLoc.x, agency.currLoc.y); // also the first data point
     curveVertex(amountLoc.x, amountLoc.y);
     curveVertex(country.currLoc.x, country.currLoc.y);
-    curveVertex(country.currLoc.x+1000, country.currLoc.y-500); // ending control point
+    curveVertex(country.currLoc.x+1000, country.currLoc.y-00); // ending control point
     endShape();
   }
 

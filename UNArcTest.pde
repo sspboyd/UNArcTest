@@ -35,6 +35,7 @@ float margin;
 float PLOT_X1, PLOT_X2, PLOT_Y1, PLOT_Y2, PLOT_W, PLOT_H;
 
 PVector agencyAxis1, fundingAxis1, countryAxis1, agencyAxis2, fundingAxis2, countryAxis2;
+PVector countryAxis1CP, countryAxis2CP;
 
 boolean fundingScaleLinLog; // true=linear false=log
 float fundingAxisLogBase;
@@ -54,8 +55,8 @@ void setup() {
   // size(1080, 1080, PDF, generateSaveImgFileName(".pdf"));
   // Regular output
   // size(7020,4965); // 150 dpi for A0 size paper
-  // size(2048, 1536); // iPad Air 2;
-  size(1280, 920); // 150 dpi for A0 size paper
+  size(2048, 1536); // iPad Air 2;
+  // size(1280, 720);
   smooth(8);
   setPositioningVariables();
   rSn = 47; // 4,7,11,18,29...;
@@ -149,6 +150,8 @@ void setup() {
   fundingAxisLogBase = 10;
   countryAxis1 = new PVector();
   countryAxis2 = new PVector();
+  countryAxis1CP = new PVector();
+  countryAxis2CP = new PVector();
 
 
   // Font Stuff
@@ -252,18 +255,30 @@ void updateAxes() {
   agencyAxis2.x = PLOT_X1 + (PLOT_W*(1-PHI))-50;
   agencyAxis2.y = PLOT_Y2;
 
-  countryAxis1.x = PLOT_X2- PLOT_W * (pow(PHI, 3));
+  countryAxis1.x = PLOT_X2- PLOT_W * (pow(PHI, 2));
   countryAxis1.y = PLOT_Y1;
   countryAxis2.x = countryAxis1.x;
   countryAxis2.y = PLOT_Y2;
+  countryAxis1CP.x = countryAxis1.x-3000;
+  countryAxis1CP.y = countryAxis1.y;
+  countryAxis2CP.x = countryAxis2.x-3000;
+  countryAxis2CP.y = countryAxis2.y;
 }
+
 void renderAxes() {
   // render the axes
   stroke(axisClr);
   strokeWeight(1);
   line(agencyAxis1.x, agencyAxis1.y, agencyAxis2.x, agencyAxis2.y);
-  line(countryAxis1.x, countryAxis1.y, countryAxis2.x, countryAxis2.y);
   line(fundingAxis1.x, fundingAxis1.y, fundingAxis2.x, fundingAxis2.y);
+  noFill();
+  curveTightness(0);
+  beginShape();
+  curveVertex(countryAxis1CP.x, countryAxis1CP.y);
+  curveVertex(countryAxis1.x, countryAxis1.y);
+  curveVertex(countryAxis2.x, countryAxis2.y);
+  curveVertex(countryAxis2CP.x, countryAxis2CP.y);
+  endShape();
 
   // label axes
   fill(unBlueClr);
@@ -285,6 +300,9 @@ void keyPressed() {
   if (key == 'l') fundingScaleLinLog = false;
 }
 
+/*////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+ Save file Utility Functions
+ ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////*/
 String generateSaveImgFileName(String fileType) {
   String fileName;
   // save functionality in here

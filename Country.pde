@@ -3,6 +3,7 @@ public class Country {
   int year;
   float amount;
   PVector currLoc, targLoc; // getter/setter?
+  float currAngle;
   ArrayList<Transaction> countryTransactions = new ArrayList<Transaction>();
   color ctyMarkerClr, ctyTextClr;
   boolean hover, highlight;
@@ -61,16 +62,26 @@ public class Country {
     // update the position
     // get the ordinal rank of this agency from the table
     int ctyRank = expenditureByCountryTbl.findRowIndex(countryName, "Country");
-    currLoc.x = countryAxis1.x;
-    currLoc.y = map(ctyRank, 0, expenditureByCountryTbl.getRowCount()-1, countryAxis1.y, countryAxis2.y);
+    float t = map(ctyRank, 0, expenditureByCountryTbl.getRowCount()-1, 0, 1);
+    currLoc.x = curvePoint(countryAxis1CP.x, countryAxis1.x, countryAxis2.x, countryAxis2CP.x, t);
+    currLoc.y = curvePoint(countryAxis1CP.y, countryAxis1.y, countryAxis2.y, countryAxis2CP.y, t);
+    float ctx = curveTangent(countryAxis1CP.x, countryAxis1.x, countryAxis2.x, countryAxis2CP.x, t);
+    float cty = curveTangent(countryAxis1CP.y, countryAxis1.y, countryAxis2.y, countryAxis2CP.y, t);
+    currAngle = atan2(cty, ctx);
+    currAngle -= HALF_PI;
   }
 
   void render() {
     // render country name
-    float textX = currLoc.x + 18;
-    float textY = currLoc.y;
+    pushMatrix();
+    translate(currLoc.x, currLoc.y);
+    rotate(currAngle);
+
+    float textX = 18;
+    float textY = 0;
     fill(ctyTextClr);
     text(countryName, textX, textY);
+    popMatrix();
   }
 
   void setCountryTransactionList() {
