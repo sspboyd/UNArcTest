@@ -6,6 +6,6 @@ Testing out ways of visualizing UN Agency spending by country.
 
 20 different UN Agencies
 
-211 Countries
+211 Countries, States and Territories.
 
 Over $23B USD spent in 2015. 
