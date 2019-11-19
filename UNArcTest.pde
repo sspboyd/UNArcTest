@@ -57,7 +57,7 @@ void setup() {
   // Regular output
   // size(7020,4965); // 150 dpi for A0 size paper
   // size(2048, 1536); // iPad Air 2;
-  size(1920, 1030); // office display size
+  size(1920, 1030, P2D); // office display size
   // size(1600, 900);
   // size(1300, 850);
   // size(720, 650);
