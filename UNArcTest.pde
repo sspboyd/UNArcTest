@@ -43,9 +43,6 @@ ArrayList<Country> countries;
 ArrayList<Transaction> transactions;
 ArrayList<Agency> agencies;
 
-// Set up a table object to track performance
-Table perfTable;
-
 /*////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
  SETUP
  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////*/
@@ -164,15 +161,6 @@ void setup() {
   // Run tests
   // test_CountryObj("Lebanon");
   // test_AgencyObj("UNICEF");
-  // 
-  perfTable = new Table();
-  perfTable.addColumn("Frame");
-  perfTable.addColumn("Frame Start Time");
-  perfTable.addColumn("Gate 1");
-  perfTable.addColumn("Gate 2");
-  perfTable.addColumn("Gate 3");
-  perfTable.addColumn("Gate 4");
-  perfTable.addColumn("Elapsed Frame Time");
 
   println("setup done: " + nf(millis() / 1000.0, 1, 2));
 }
@@ -185,14 +173,6 @@ void draw() {
   if (pdfRecord) {
     beginRecord(PDF, generateSaveImgFileName(".pdf"));
   }
-
-  // Setup perfTable info
-  TableRow newRow = perfTable.addRow();
-  newRow.setInt("Frame", frameCount);
-  int startTime = millis();
-  int currTime = startTime;
-  newRow.setInt("Frame Start Time", startTime);
-
 
   background(chartBkgClr);
   updateAxes();
@@ -227,13 +207,6 @@ void draw() {
     t.checkHover();
   }
 
-  // currTime = millis();
-  int gt1Start = startTime;
-  int gt1End = millis();
-  newRow.setInt("Gate 1", gt1End - gt1Start);
-
-
-
   // Render the objects
   for (Agency ag : agencies) {
     ag.updateStyle();
@@ -241,36 +214,17 @@ void draw() {
     ag.render();
   }
 
-  // currTime = millis();
-  int gt2Start = gt1End;
-  int gt2End = millis();
-  newRow.setInt("Gate 2", gt2End - gt2Start);
-
-
-
   for (Country cty : countries) {
     cty.updateStyle();
     cty.update();
     cty.render();
   }
 
-  // currTime = millis();
-  int gt3Start = gt2End;
-  int gt3End = millis();
-  newRow.setInt("Gate 3", gt3End - gt3Start);
-
-
   for (Transaction t : transactions) {
     t.updateStyle();
     t.update();
     t.render();
   }
-
-  // currTime = millis();
-  int gt4Start = gt3End;
-  int gt4End = millis();
-  newRow.setInt("Gate 4", gt4End - gt4Start);
-
 
   // Render chart title
   textFont(mainTitleF);
@@ -287,12 +241,6 @@ void draw() {
     endRecord();
     pdfRecord = false;
   }
-
-
-
-  // currTime = millis();
-  int frameElapsedTime = millis() - startTime;
-  newRow.setInt("Elapsed Frame Time", frameElapsedTime);
 }
 
 
@@ -340,62 +288,10 @@ void keyPressed() {
   if (key == 'L') fundingScaleLinLog = true;
   if (key == 'l') fundingScaleLinLog = false;
   if (key == 'e') {
-    // print out the results
-    calcPerfTable();
     exit();
   }
 }
 
-void calcPerfTable() {
-  // frame count
-  println("Frame Count: " + perfTable.getRowCount());
-
-  // Gate 1
-  int[] g1 = perfTable.getIntColumn("Gate 1");
-  int g1Min = min(g1);
-  int g1Max = max(g1);
-  int g1Sum = 0;
-  for (int t : g1) {
-    g1Sum += t;
-  }
-  println("Gate 1: " + g1Min + " // " + g1Sum/(1.0*perfTable.getRowCount()) + " // " + g1Max + " (ms)");
-  //println(g1);
-
-  // Gate 2
-  int[] g2 = perfTable.getIntColumn("Gate 2");
-  int g2Min = min(g2);
-  int g2Max = max(g2);
-  int g2Sum = 0;
-  for (int t : g2) {
-    g2Sum += t;
-  }
-  println("Gate 2: " + g2Min + " // " + g2Sum/(1.0*perfTable.getRowCount()) + " // " + g2Max + " (ms)");
-  //println(g2);
-
-
-  // Gate 2
-  int[] g3 = perfTable.getIntColumn("Gate 3");
-  int g3Min = min(g3);
-  int g3Max = max(g3);
-  int g3Sum = 0;
-  for (int t : g3) {
-    g3Sum += t;
-  }
-  println("Gate 3: " + g3Min + " // " + g3Sum/(1.0*perfTable.getRowCount()) + " // " + g3Max + " (ms)");
-  //println(g3);
-
-
-  // Gate 4
-  int[] g4 = perfTable.getIntColumn("Gate 4");
-  int g4Min = min(g4);
-  int g4Max = max(g4);
-  int g4Sum = 0;
-  for (int t : g4) {
-    g4Sum += t;
-  }
-  println("Gate 4: " + g4Min + " // " + g4Sum/(1.0*perfTable.getRowCount()) + " // " + g4Max + " (ms)");
-  //println(g3);
-}
 
 String generateSaveImgFileName(String fileType) {
   String fileName;
