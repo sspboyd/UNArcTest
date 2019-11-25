@@ -47,7 +47,7 @@ public class Transaction {
   }
 
   void checkHover() {
-    if (amountLoc.dist(new PVector(mouseX, mouseY))<4) {
+    if (amountLoc.dist(new PVector(mouseX, mouseY)) < 7) { // change this hover area to be wider but short like 50px and 2px
       hover = true;
       highlight = true;
       univHover = true;

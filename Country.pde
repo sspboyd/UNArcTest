@@ -29,7 +29,7 @@ public class Country {
   }
 
   void checkHover() {
-    if (currLoc.dist(new PVector(mouseX, mouseY)) < 4) {
+    if (currLoc.dist(new PVector(mouseX, mouseY)) < 7) {
       hover = true;
       univHover = true;
       // set related Agency and Country objects to highlight = true;

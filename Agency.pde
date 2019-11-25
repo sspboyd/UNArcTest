@@ -31,7 +31,7 @@ public class Agency {
   }
 
   void checkHover() {
-    if (currLoc.dist(new PVector(mouseX, mouseY)) < 10) {
+    if (currLoc.dist(new PVector(mouseX, mouseY)) < 18) {
       hover = true;
       univHover = true;
       // set related Agency and Country objects to highlight = true;
