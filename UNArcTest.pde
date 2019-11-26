@@ -43,6 +43,13 @@ ArrayList<Country> countries;
 ArrayList<Transaction> transactions;
 ArrayList<Agency> agencies;
 
+
+public void settings() {
+  if (pdfRecord) {
+    size(6000, 4800, "processing.pdf.PGraphicsPDF", generateSaveImgFileName(".pdf")); // sized for 8x10 @ 600dpi
+  }
+}
+
 /*////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
  SETUP
  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////*/
@@ -50,15 +57,15 @@ ArrayList<Agency> agencies;
 void setup() {
   background(255);
   // PDF output
-  // size(1080, 1080, PDF, generateSaveImgFileName(".pdf"));
+  // size(6000, 4800, PDF, generateSaveImgFileName(".pdf")); // only works with the Processing PDE
   // Regular output
   // size(7020,4965); // 150 dpi for A0 size paper
   // size(2048, 1536); // iPad Air 2;
-  size(1920, 1030, P2D); // office display size
+  // size(1920, 1030, P2D); // office display size
   // size(1600, 900);
   // size(1300, 850);
   // size(720, 650);
-  smooth(8);
+  // smooth(8);
   setPositioningVariables();
   rSn = 47; // 4,7,11,18,29...;
   randomSeed(rSn);
