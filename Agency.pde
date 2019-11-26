@@ -31,7 +31,8 @@ public class Agency {
   }
 
   void checkHover() {
-    if (currLoc.dist(new PVector(mouseX, mouseY)) < 18) {
+    if ((abs(mouseX-currLoc.x)<16) && (mouseY > currLoc.y) && (mouseY < height)) {
+      // if (currLoc.dist(new PVector(mouseX, mouseY)) < 18) {
       hover = true;
       univHover = true;
       // set related Agency and Country objects to highlight = true;
@@ -45,6 +46,11 @@ public class Agency {
   }
 
   void updateStyle() {
+    if (hover) {
+      textFont(agHoverLabelF);
+    } else {
+      textFont(axesLabelF);
+    }
     if (univHover) { // if true, then set this object to either highlighted or faded style
       if (hover || highlight) { // true, highlighted style
         agTextClr = unBlueClr;

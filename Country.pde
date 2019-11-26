@@ -29,9 +29,9 @@ public class Country {
   }
 
   void checkHover() {
-    if ( (countryAxis1.x < mouseX) && (mouseX < PLOT_X2) && (abs(currLoc.y - mouseY) < 2) ) {
+    if ( (countryAxis1.x-200 < mouseX) && (mouseX < PLOT_X2) && (abs(currLoc.y - mouseY) < 2) ) {
       hover = true;
-      univHover = true;
+      univHover = true; // globally available var for hover
       // set related Agency and Country objects to highlight = true;
       for (Transaction ctyTran : countryTransactions) {
         ctyTran.highlight = true;
@@ -69,8 +69,13 @@ public class Country {
     // render country name
     float textX = currLoc.x + 18;
     float textY = currLoc.y;
+    textFont(axesLabelF);
     fill(ctyTextClr);
     text(countryName, textX, textY);
+    if (hover) {
+      textFont(mainTitleF);
+      text(countryName, textX, textY);
+    }
   }
 
   void setCountryTransactionList() {

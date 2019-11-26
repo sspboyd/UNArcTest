@@ -105,6 +105,11 @@ public class Transaction {
     curveVertex(country.currLoc.x, country.currLoc.y);
     curveVertex(country.currLoc.x+1000, country.currLoc.y-500); // ending control point
     endShape();
+
+    if (hover) {
+      fill(unBlueClr);
+      // rect(amountLoc.x, amountLoc.y, 10, 10); // testing idea to show vertical $ range of mouseover
+    }
   }
 
   void setTransactionCountry() {
