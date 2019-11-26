@@ -17,7 +17,7 @@ int transactionMax, transactionMin;
 int countryExpendMax, countryExpendMin;
 
 //// Declare Font Variables
-PFont mainTitleF, axesLabelF, titleF;
+PFont mainTitleF, axesLabelF, titleF, agHoverLabelF;
 
 
 //Highlight colour (UN Blue)
@@ -44,11 +44,15 @@ ArrayList<Transaction> transactions;
 ArrayList<Agency> agencies;
 
 
-public void settings() {
-  if (pdfRecord) {
-    size(6000, 4800, "processing.pdf.PGraphicsPDF", generateSaveImgFileName(".pdf")); // sized for 8x10 @ 600dpi
-  }
-}
+// public void settings() {
+//   if (pdfRecord) {
+//     size(6000, 4800, "processing.pdf.PGraphicsPDF", generateSaveImgFileName(".pdf")); // sized for 8x10 @ 600dpi
+//   }else{
+//     size(1920, 1030, "processing.opengl.PGraphics2D");
+//     smooth(8);
+
+//   }
+// }
 
 /*////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
  SETUP
@@ -61,11 +65,11 @@ void setup() {
   // Regular output
   // size(7020,4965); // 150 dpi for A0 size paper
   // size(2048, 1536); // iPad Air 2;
-  // size(1920, 1030, P2D); // office display size
+  size(1920, 1030, P2D); // office display size
   // size(1600, 900);
   // size(1300, 850);
   // size(720, 650);
-  // smooth(8);
+  smooth(8);
   setPositioningVariables();
   rSn = 47; // 4,7,11,18,29...;
   randomSeed(rSn);
@@ -164,6 +168,7 @@ void setup() {
   // titleF = loadFont("HelveticaNeue-Thin-72.vlw");
   mainTitleF = createFont("HelveticaNeue-Thin", 48, true);  //requires a font file in the data folder?
   axesLabelF = createFont("Helvetica", 11);  //requires a font file in the data folder?
+  agHoverLabelF = createFont("Helvetica", 24);  //requires a font file in the data folder?
 
   // Run tests
   // test_CountryObj("Lebanon");
@@ -236,9 +241,9 @@ void draw() {
   // Render chart title
   textFont(mainTitleF);
   // textFont(titleF, 144);
-  fill(unBlueClr, 147);
+  fill(unBlueClr);
   textAlign(LEFT);
-  text("$23 Billion USD\nUN Agency Expenditures \nby Country \nin 2015", PLOT_X1, PLOT_Y1+textAscent()*PHI);
+  text("$23 Billion USD\nUN Agency Expenditures \nin 2015", PLOT_X1, PLOT_Y1+textAscent()*PHI);
 
   renderAxes();
   renderFundingAxisScaleMarkers();
