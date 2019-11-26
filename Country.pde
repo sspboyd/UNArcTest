@@ -29,7 +29,7 @@ public class Country {
   }
 
   void checkHover() {
-    if (currLoc.dist(new PVector(mouseX, mouseY)) < 7) {
+    if ( (countryAxis1.x < mouseX) && (mouseX < PLOT_X2) && (abs(currLoc.y - mouseY) < 2) ) {
       hover = true;
       univHover = true;
       // set related Agency and Country objects to highlight = true;
@@ -48,8 +48,8 @@ public class Country {
         ctyMarkerClr=unBlueClr;
         ctyTextClr=unBlueClr;
       } else { // false, fade style
-        ctyMarkerClr=color(0, 76);
-        ctyTextClr=color(0, 76);
+        ctyMarkerClr=color(0, 18);
+        ctyTextClr=color(0, 18);
       }
     } else { // false, default style
       ctyMarkerClr=color(0);
