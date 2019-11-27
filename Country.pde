@@ -69,13 +69,13 @@ public class Country {
     // render country name
     float textX = currLoc.x + 18;
     float textY = currLoc.y;
-    textFont(axesLabelF);
-    fill(ctyTextClr);
-    text(countryName, textX, textY);
     if (hover) {
       textFont(mainTitleF);
-      text(countryName, textX, textY);
+    }else{
+    textFont(axesLabelF);
     }
+    fill(ctyTextClr);
+    text(countryName, textX, textY);
   }
 
   void setCountryTransactionList() {

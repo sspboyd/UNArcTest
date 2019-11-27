@@ -53,6 +53,7 @@ public class Agency {
     }
     if (univHover) { // if true, then set this object to either highlighted or faded style
       if (hover || highlight) { // true, highlighted style
+      textFont(agHoverLabelF);
         agTextClr = unBlueClr;
         agMarkerClr = unBlueClr;
       } else { // false, fade style
