@@ -43,6 +43,8 @@ public class Country {
   }
 
   void updateStyle() {
+        textFont(axesLabelF);
+
     if (univHover) { // if true, then set this object to either highlighted or faded style
       if (hover || highlight) { // true, highlighted style
         ctyMarkerClr=unBlueClr;
@@ -70,12 +72,14 @@ public class Country {
     float textX = currLoc.x + 18;
     float textY = currLoc.y;
     if (hover) {
-      textFont(mainTitleF);
+      // textLeading(10);
+      textFont(cntryHoverLabelF);
     }else{
-    textFont(axesLabelF);
+    textFont(axesLabelF );
     }
     fill(ctyTextClr);
-    text(countryName, textX, textY);
+    textLeading(35);
+    text(countryName, textX, textY-textAscent(), PLOT_X2-currLoc.x, 400);
   }
 
   void setCountryTransactionList() {
