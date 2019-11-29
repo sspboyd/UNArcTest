@@ -17,7 +17,7 @@ int transactionMax, transactionMin;
 int countryExpendMax, countryExpendMin;
 
 //// Declare Font Variables
-PFont mainTitleF, axesLabelF, titleF, agHoverLabelF;
+PFont mainTitleF, axesLabelF, titleF, agHoverLabelF, cntryHoverLabelF;
 
 
 //Highlight colour (UN Blue)
@@ -50,7 +50,6 @@ ArrayList<Agency> agencies;
 //   }else{
 //     size(1920, 1030, "processing.opengl.PGraphics2D");
 //     smooth(8);
-
 //   }
 // }
 
@@ -65,7 +64,8 @@ void setup() {
   // Regular output
   // size(7020,4965); // 150 dpi for A0 size paper
   // size(2048, 1536); // iPad Air 2;
-  size(1920, 1030, P2D); // office display size
+  // size(1920, 1030, P2D); // office display size
+  size(1440, 850, P2D); // curent macbook pro size at half scaling?
   // size(1600, 900);
   // size(1300, 850);
   // size(720, 650);
@@ -169,6 +169,7 @@ void setup() {
   mainTitleF = createFont("HelveticaNeue-Thin", 48, true);  //requires a font file in the data folder?
   axesLabelF = createFont("Helvetica", 11);  //requires a font file in the data folder?
   agHoverLabelF = createFont("Helvetica", 24);  //requires a font file in the data folder?
+  cntryHoverLabelF = createFont("HelveticaNeue-Thin", 36, true);  //requires a font file in the data folder?
 
   // Run tests
   // test_CountryObj("Lebanon");
@@ -248,6 +249,13 @@ void draw() {
   renderAxes();
   renderFundingAxisScaleMarkers();
   if (recording) saveFrame("MM_output/" + getSketchName() + "-#####.png");
+
+  // agency card test
+  // stroke(unBlueClr, 76);
+  // noStroke();
+  // strokeWeight(3);  
+  // fill(255,123);
+  // rect( PLOT_X1, 500, 600, 300);
 
   if (pdfRecord) {
     endRecord();
