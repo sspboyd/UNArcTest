@@ -31,7 +31,7 @@ public class Agency {
   }
 
   void checkHover() {
-    if ((abs(mouseX-currLoc.x)<16) && (mouseY > currLoc.y) && (mouseY < height)) {
+    if ( (abs(mouseX - currLoc.x) < 16)  &&  (mouseY > (currLoc.y - 175))  &&  (mouseY < height) ) {
       // if (currLoc.dist(new PVector(mouseX, mouseY)) < 18) {
       hover = true;
       univHover = true;
@@ -76,6 +76,10 @@ public class Agency {
   }
 
   void render() {
+if(hover){
+      fill(unBlueClr,76);
+    rect(countryAxis1.x, PLOT_Y1, PLOT_X2 - countryAxis1.x, PLOT_Y2-countryAxis1.y);
+  }
     float textX = currLoc.x;
     float textY = currLoc.y+20;
     pushMatrix();
