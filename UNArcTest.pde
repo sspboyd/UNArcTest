@@ -1,3 +1,4 @@
+import java.util.Map; // for DataCard Hashmaps
 import processing.pdf.*;
 boolean pdfRecord = false;
 
@@ -12,6 +13,8 @@ final int numberOfMemberStates = 211;
 final int numberOfUNAgencies = 20;
 
 Table agencyCountryTbl, expenditureByCountryTbl, agencyExpenditureTotalTbl;
+Table unAbbrevTbl2;
+
 
 int transactionMax, transactionMin;
 int countryExpendMax, countryExpendMin;
@@ -42,6 +45,11 @@ float fundingAxisLogBase;
 ArrayList<Country> countries;
 ArrayList<Transaction> transactions;
 ArrayList<Agency> agencies;
+
+
+//// Declare Globals for Data Cards
+// AgCard agCard1;
+HashMap<String, AgencyCard> agencyCards;
 
 
 // public void settings() {
@@ -78,6 +86,7 @@ void setup() {
   agencyCountryTbl = loadTable("Agency_Expenditure_by_Country_2015.csv", "header");
   expenditureByCountryTbl = loadTable("Total_Expenditure_by_Country.csv", "header");
   agencyExpenditureTotalTbl = loadTable("Agency_Expenditure_Total_2015.csv", "header");
+  unAbbrevTbl2 = loadTable("UN-Agencies-Metadata.csv", "header");
 
   // prep data
   // min / max for transactions (used on funding axis)
@@ -107,7 +116,11 @@ void setup() {
   transactions = new ArrayList<Transaction>();
   agencies = new ArrayList<Agency>();
 
+  // Prep Data Card Hashmaps
+  agencyCards = new HashMap<String, AgencyCard>();
+
   // Populate ArrayLists
+  //Transactions ArrayLists
   for (int i=0; i < agencyCountryTbl.getRowCount(); i++) {
     TableRow agencyCountryRow = agencyCountryTbl.getRow(i);
     int     currYear= agencyCountryRow.getInt("Year");
@@ -118,6 +131,7 @@ void setup() {
     transactions.add(newTransaction);
   }
 
+  // Countries ArrayList
   for (int i=0; i < expenditureByCountryTbl.getRowCount(); i++) {
     TableRow countryRow = expenditureByCountryTbl.getRow(i);
     int     currYear= countryRow.getInt("Year");
@@ -127,16 +141,25 @@ void setup() {
     countries.add(newCountry);
   }
 
+  // Agencies ArrayList
   for (int i=0; i < agencyExpenditureTotalTbl.getRowCount(); i++) {
     TableRow agencyRow = agencyExpenditureTotalTbl.getRow(i);
     int     currYear = 2015; // hard coding year val....
     String  currAgencyUNAbbrev= agencyRow.getString("Agency");
+    // String currExpenditure = agencyRow.getString("Expenditure");
+    println("currAgencyUNAbbrev : " + currAgencyUNAbbrev);
+    TableRow result = unAbbrevTbl2.findRow(currAgencyUNAbbrev, "Abbreviation");
+    println("result: " + result);
+    String currAgencyName = "";
+    if (result != null) {
+      currAgencyName = result.getString("Official name");
+    }
     float   currAmount= agencyRow.getFloat("Expenditure");
-    Agency newAgency = new Agency(currYear, currAgencyUNAbbrev, currAmount);
+    Agency newAgency = new Agency(currYear, currAgencyUNAbbrev, currAgencyName, currAmount);
     agencies.add(newAgency);
   }
 
-  // Set references between objects
+  // Set references between Country, Agency and Transaction objects
   println("setting transaction references");
   for (Transaction currTrans : transactions) {
     currTrans.setTransactionCountry();
@@ -151,7 +174,8 @@ void setup() {
   println("setting country references");
   for (Country currCnty : countries) {
     currCnty.setCountryTransactionList();
-  }
+  }  
+
 
   // Initialize Axes
   agencyAxis1 = new PVector();
@@ -162,13 +186,21 @@ void setup() {
   fundingAxisLogBase = 10;
   countryAxis1 = new PVector();
   countryAxis2 = new PVector();
+  // updateAxes();
+
+
+  // Creating AgencyCards and HashMap to name
+  for (Agency currAg : agencies) {
+    AgencyCard newAgCard = new AgencyCard(currAg);
+    agencyCards.put(currAg.agencyName, newAgCard);
+  }
 
 
   // Font Stuff
   // titleF = loadFont("HelveticaNeue-Thin-72.vlw");
   mainTitleF = createFont("HelveticaNeue-Thin", 48, true);  //requires a font file in the data folder?
   axesLabelF = createFont("Helvetica", 11);  //requires a font file in the data folder?
-  agHoverLabelF = createFont("Helvetica", 24);  //requires a font file in the data folder?
+  agHoverLabelF = createFont("Helvetica", 18);  //requires a font file in the data folder?
   cntryHoverLabelF = createFont("HelveticaNeue-Thin", 36, true);  //requires a font file in the data folder?
 
   // Run tests
@@ -239,6 +271,10 @@ void draw() {
     t.render();
   }
 
+  for (AgencyCard currAc : agencyCards.values()) {
+    currAc.render();
+  }
+
   // Render chart title
   textFont(mainTitleF);
   // textFont(titleF, 144);
@@ -249,13 +285,6 @@ void draw() {
   renderAxes();
   renderFundingAxisScaleMarkers();
   if (recording) saveFrame("MM_output/" + getSketchName() + "-#####.png");
-
-  // agency card test
-  // stroke(unBlueClr, 76);
-  // noStroke();
-  // strokeWeight(3);  
-  // fill(255,123);
-  // rect( PLOT_X1, 500, 600, 300);
 
   if (pdfRecord) {
     endRecord();
