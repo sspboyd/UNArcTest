@@ -43,7 +43,7 @@ public class Country {
   }
 
   void updateStyle() {
-        textFont(axesLabelF);
+    textFont(axesLabelF);
 
     if (univHover) { // if true, then set this object to either highlighted or faded style
       if (hover || highlight) { // true, highlighted style
@@ -68,14 +68,20 @@ public class Country {
   }
 
   void render() {
+    if (hover) {
+      fill(unBlueClr, 76);
+      // rect(countryAxis1.x, PLOT_Y1, PLOT_X2 - countryAxis1.x, PLOT_Y2-countryAxis1.y);
+      rect(countryAxis1.x, currLoc.y, PLOT_X2 - countryAxis1.x, 50);
+    }
+
     // render country name
     float textX = currLoc.x + 18;
     float textY = currLoc.y;
     if (hover) {
       // textLeading(10);
       textFont(cntryHoverLabelF);
-    }else{
-    textFont(axesLabelF );
+    } else {
+      textFont(axesLabelF );
     }
     fill(ctyTextClr);
     textLeading(35);
