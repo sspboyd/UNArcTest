@@ -12,9 +12,10 @@ public class Agency {
   boolean hover, highlight;
 
 
-  public Agency (int _year, String _unAgencyAbbrev, float _expenditure) {
+  public Agency (int _year, String _unAgencyAbbrev, String _agencyName, float _expenditure) {
     year = _year;
     unAgencyAbbrev = _unAgencyAbbrev;
+    agencyName = _agencyName;
     expenditure = _expenditure;
     currLoc = new PVector();
     targLoc = new PVector();
@@ -53,7 +54,7 @@ public class Agency {
     }
     if (univHover) { // if true, then set this object to either highlighted or faded style
       if (hover || highlight) { // true, highlighted style
-      textFont(agHoverLabelF);
+        textFont(agHoverLabelF);
         agTextClr = unBlueClr;
         agMarkerClr = unBlueClr;
       } else { // false, fade style
@@ -76,10 +77,6 @@ public class Agency {
   }
 
   void render() {
-if(hover){
-      fill(unBlueClr,76);
-    rect(countryAxis1.x, PLOT_Y1, PLOT_X2 - countryAxis1.x, PLOT_Y2-countryAxis1.y);
-  }
     float textX = currLoc.x;
     float textY = currLoc.y+20;
     pushMatrix();
