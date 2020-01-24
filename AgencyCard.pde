@@ -12,7 +12,7 @@ public class AgencyCard {
 
 
   public AgencyCard (Agency _agency) {
-      agency = _agency;
+    agency = _agency;
     borderClr = unBlueClr;
     textClr = color(0);
     bgClr = color(255, 199);
@@ -21,13 +21,13 @@ public class AgencyCard {
     targLoc = new PVector();
   }
 
-  void render(){
-      if(agency.hover){
-   currLoc.x = PLOT_X1;
-    currLoc.y = fundingAxis2.y-20;
-    w = fundingAxis1.x - currLoc.x-47;
-    h = PLOT_Y2 - fundingAxis2.y;
- 
+  void render() {
+    if (agency.hover) {
+      currLoc.x = PLOT_X1;
+      currLoc.y = fundingAxis2.y-20;
+      w = fundingAxis1.x - currLoc.x-47;
+      h = PLOT_Y2 - fundingAxis2.y;
+
 
       fill(bgClr);
       noStroke();
@@ -38,7 +38,7 @@ public class AgencyCard {
       textFont(agHoverLabelF);
       textLeading(36);
       text(agency.agencyName, currLoc.x + 11, currLoc.y+47, w-11, h-11);
-      text("$"+ nfc(agency.expenditure,0), currLoc.x + 11, currLoc.y+199, w-11, h-11);
-      }
+      text("$"+ nfc(agency.expenditure, 0), currLoc.x + 11, currLoc.y+199, w-11, h-11);
+    }
   }
 }
