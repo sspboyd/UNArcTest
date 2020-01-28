@@ -68,15 +68,19 @@ public class Country {
   }
 
   void render() {
+    // setting text location vars
+    float textX = currLoc.x + 18;
+    float textY = currLoc.y;
+
     if (hover) {
       fill(unBlueClr, 76);
-      // rect(countryAxis1.x, PLOT_Y1, PLOT_X2 - countryAxis1.x, PLOT_Y2-countryAxis1.y);
       rect(countryAxis1.x, currLoc.y, PLOT_X2 - countryAxis1.x, 50);
+      fill(0);
+      textFont(agHoverLabelF);
+      text("$"+nfc(amount, 0), textX, textY+textAscent()*(3));
     }
 
     // render country name
-    float textX = currLoc.x + 18;
-    float textY = currLoc.y;
     if (hover) {
       // textLeading(10);
       textFont(cntryHoverLabelF);
