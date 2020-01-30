@@ -246,7 +246,7 @@ void draw() {
     nearestAg.setHover();
   }
 
-  if ( (countryAxis1.x-200 < mouseX) && (mouseX < PLOT_X2) && (mouseY > countryAxis1.y) && mouseY < countryAxis2.y ) {
+  if ( (countryAxis1.x-200 < mouseX) && (mouseX < PLOT_X2) && (mouseY > countryAxis1.y-textAscent()*3) && mouseY < countryAxis2.y + textAscent()*3 ) {
     Country nearestCty = nearestCountry(countries);
     nearestCty.setHover();
   }
