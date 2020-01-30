@@ -23,6 +23,9 @@ public class Country {
     highlight = false;
   }
 
+  public Country() {
+  }
+
   void resetHoverHighlight() {
     hover = false;
     highlight = false;
@@ -39,6 +42,16 @@ public class Country {
       }
     } else {
       hover = false;
+    }
+  }
+
+  void setHover() {
+    hover = true;
+    univHover = true; // globally available var for hover
+    // set related Agency and Country objects to highlight = true;
+    for (Transaction ctyTran : countryTransactions) {
+      ctyTran.highlight = true;
+      ctyTran.agency.highlight = true;
     }
   }
 

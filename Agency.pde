@@ -26,6 +26,9 @@ public class Agency {
     agAlpha = 255;
   }
 
+  public Agency() {
+  }
+
   void resetHoverHighlight() {
     hover = false;
     highlight = false;
@@ -43,6 +46,16 @@ public class Agency {
       }
     } else {
       hover = false;
+    }
+  }
+
+  void setHover() {
+    hover = true;
+    univHover = true;
+    // set related Agency and Country objects to highlight = true;
+    for (Transaction agTran : agencyTransactions) {
+      agTran.highlight = true;
+      agTran.country.highlight = true;
     }
   }
 

@@ -206,6 +206,7 @@ void setup() {
   // Run tests
   // test_CountryObj("Lebanon");
   // test_AgencyObj("UNICEF");
+  // test_AgencyNullObj();
 
   println("setup done: " + nf(millis() / 1000.0, 1, 2));
 }
@@ -239,13 +240,15 @@ void draw() {
   }
 
 
-  // check to see if the mouse is hovering over any objects
-  for (Agency ag : agencies) {
-    ag.checkHover();
+  // check to see if the mouse is hovering over Agencies
+  if ((mouseX > (agencyAxis1.x - 50)) && (mouseX < (agencyAxis2.x + 50)) && (mouseY > (agencyAxis1.y-175))) {
+    Agency nearestAg = nearestAgency(agencies);
+    nearestAg.setHover();
   }
 
-  for (Country cty : countries) {
-    cty.checkHover();
+  if ( (countryAxis1.x-200 < mouseX) && (mouseX < PLOT_X2) && (mouseY > countryAxis1.y) && mouseY < countryAxis2.y ) {
+    Country nearestCty = nearestCountry(countries);
+    nearestCty.setHover();
   }
 
   for (Transaction t : transactions) {
@@ -284,6 +287,8 @@ void draw() {
 
   renderAxes();
   renderFundingAxisScaleMarkers();
+  // renderBarChart(); 
+
   if (recording) saveFrame("MM_output/" + getSketchName() + "-#####.png");
 
   if (pdfRecord) {
@@ -292,6 +297,36 @@ void draw() {
   }
 }
 
+// DRAW Loop Ends ///////////////////////////////////////////////////////////////////////////////////
+
+
+Agency nearestAgency(ArrayList<Agency> _agencies) {
+  // check if mouse location is within 'hover' range of the agency axis
+  Agency closestAgency = new Agency(); // create a new placeholder agency object.
+  float currMinDist = Float.MAX_VALUE; // set initally to max possible value for floats
+  for (Agency currAg : _agencies) {
+    float currAgDist = dist(mouseX, mouseY, currAg.currLoc.x, currAg.currLoc.y);
+    if (currAgDist < currMinDist) { 
+      currMinDist = currAgDist;
+      closestAgency = currAg;
+    }
+  }
+  return closestAgency;
+}
+
+Country nearestCountry(ArrayList<Country> _countries) {
+  // check if mouse location is within 'hover' range of the agency axis
+  Country closestCty = new Country(); // create a new placeholder agency object.
+  float currMinDist = Float.MAX_VALUE; // set initally to max possible value for floats
+  for (Country currCty : _countries) {
+    float currCtyDist = dist(mouseX, mouseY, currCty.currLoc.x, currCty.currLoc.y);
+    if (currCtyDist < currMinDist) { 
+      currMinDist = currCtyDist;
+      closestCty = currCty;
+    }
+  }
+  return closestCty;
+}
 
 void updateAxes() {
   fundingAxis1.x = PLOT_X1 + (PLOT_W*(1-PHI));
@@ -331,6 +366,10 @@ void renderAxes() {
   popMatrix();
 }
 
+
+/*////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+ KEYBOARD UI
+ ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////*/
 void keyPressed() {
   if (key == 'S') screenCap(".jpg");
   if (key == 'P') pdfRecord = true;
@@ -453,7 +492,7 @@ void renderBarChart() {
     float tx = countryAxis1.x + 18;
     float ty = map(rowCounter+=1, 0, expenditureByCountryTbl.getRowCount(), PLOT_Y1, PLOT_Y2);
     float barChartW = map(row.getFloat("Amount"), 0, countryExpendMax, 0, PLOT_X2-countryAxis1.x);
-    fill(barChartClr, 123);
+    fill(unBlueClr, 76);
     noStroke();
     rect(tx, ty, barChartW, 2);
   }
@@ -557,4 +596,10 @@ void test_AgencyObj(String _ag) {
     output += "\n"+t.countryName + ": " + t.amount;
   }
   println(output);
+}
+
+void test_AgencyNullObj() {
+  Agency nullAg = new Agency();
+  println(nullAg);
+  println(nullAg.agencyName);
 }
