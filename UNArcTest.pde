@@ -24,12 +24,15 @@ PFont mainTitleF, axesLabelF, titleF, agHoverLabelF, cntryHoverLabelF;
 
 
 //Highlight colour (UN Blue)
-color unBlueClr = color(91, 146, 229);
+color unBlueClr = color(65, 143, 222);
 color transactionCurveClr = color(0);
 color chartBkgClr = 255;
 color axisClr = transactionCurveClr;
 color barChartClr = transactionCurveClr;
 // color countryLabelClr = unBlueClr;
+
+// UN Logo
+PShape unLogo;
 
 boolean univHover = false;
 
@@ -82,6 +85,10 @@ void setup() {
   setPositioningVariables();
   rSn = 47; // 4,7,11,18,29...;
   randomSeed(rSn);
+
+  // Load UN Logo
+  unLogo = loadShape("UNBlueLogo.svg");
+  unLogo.scale(.29);
 
   // load data
   agencyCountryTbl = loadTable("Agency_Expenditure_by_Country_2015.csv", "header");
@@ -224,6 +231,10 @@ void draw() {
   }
 
   background(chartBkgClr);
+  // unLogo.enableStyle();
+  color logoClr = color(unBlueClr, 123);
+  unLogo.setFill(logoClr);
+  shape(unLogo, PLOT_X1, PLOT_Y1+200);
   updateAxes();
 
   // renderBarChart();
