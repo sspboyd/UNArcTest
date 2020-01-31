@@ -41,6 +41,7 @@ PVector agencyAxis1, fundingAxis1, countryAxis1, agencyAxis2, fundingAxis2, coun
 
 boolean fundingScaleLinLog; // true=linear false=log
 float fundingAxisLogBase;
+int fundingAxisMin, fundingAxisMax;
 
 ArrayList<Country> countries;
 ArrayList<Transaction> transactions;
@@ -188,6 +189,8 @@ void setup() {
   countryAxis2 = new PVector();
   // updateAxes();
 
+  fundingAxisMin =0;
+  fundingAxisMax = 1000000000;
 
   // Creating AgencyCards and HashMap to name
   for (Agency currAg : agencies) {
@@ -441,7 +444,7 @@ void renderFundingAxisScaleMarkers() {
   float numTicks = floor(log(maxTickVal)/log(10));
   // println("numTicks: " + numTicks);
   // println("maxTickVal: " + maxTickVal);
-  for (int i = (int)numTicks; i > 5; i--) {
+  for (int i = (int)numTicks; i > 1; i--) {
 
     float currTickVal = pow(10, i);
     if (fundingScaleLinLog) {
@@ -449,7 +452,8 @@ void renderFundingAxisScaleMarkers() {
       tickY = map(currTickVal, (int)maxTickVal, transactionMin, fundingAxis1.y, fundingAxis2.y);
     } else {
       // Log scale pfv
-      tickY = powMap((int)currTickVal, fundingAxisLogBase, (int)maxTickVal, transactionMin, fundingAxis1.y, fundingAxis2.y);
+      // tickY = powMap((int)currTickVal, fundingAxisLogBase, (int)maxTickVal, transactionMin, fundingAxis1.y, fundingAxis2.y);
+      tickY = map(log(currTickVal), log(pow(10, 9)), 0, fundingAxis1.y, fundingAxis2.y);
     }
 
     // tickX = map(i, numTicks, 0, PLOT_X1, fundingAxis1.x-0);

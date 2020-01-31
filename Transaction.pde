@@ -87,9 +87,10 @@ public class Transaction {
     amountLoc.x = fundingAxis1.x;
 
     if (fundingScaleLinLog) {
-      amountLoc.y = map(amount, transactionMax, transactionMin, fundingAxis1.y, fundingAxis2.y); // change transactionMax to funding order of magnitude max.
+      amountLoc.y = map(amount, fundingAxisMax, fundingAxisMin, fundingAxis1.y, fundingAxis2.y); // change transactionMax to funding order of magnitude max.
     } else {
-      amountLoc.y = powMap((int)amount, fundingAxisLogBase, transactionMax, transactionMin, fundingAxis1.y, fundingAxis2.y);
+      // amountLoc.y = powMap((int)amount, fundingAxisLogBase, fundingAxisMax, fundingAxisMin, fundingAxis1.y, fundingAxis2.y);
+      amountLoc.y = map(log(amount), log(pow(10, 9)), 0, fundingAxis1.y, fundingAxis2.y);
     }
   }
 
