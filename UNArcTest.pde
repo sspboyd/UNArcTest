@@ -9,8 +9,8 @@ int rSn; // randomSeed number. put into var so can be saved in file name. defaul
 final float PHI = 0.618033989;
 boolean recording = false; // used for MovieMaker output
 
-final int numberOfMemberStates = 211;
-final int numberOfUNAgencies = 20;
+// final int numberOfMemberStates = 211;
+// final int numberOfUNAgencies = 20;
 
 Table agencyCountryTbl, expenditureByCountryTbl, agencyExpenditureTotalTbl;
 Table unAbbrevTbl2;
