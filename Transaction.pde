@@ -47,12 +47,16 @@ public class Transaction {
   }
 
   void checkHover() {
+    // println("Check Hover For Transaction: "+ countryName  + ", " + unAgencyAbbrev + ", " + amount);
     if ( ( abs(amountLoc.x - mouseX) < 150) && (abs(amountLoc.y - mouseY) < 3)) { // change this hover area to be wider but short like 50px and 2px
       hover = true;
       highlight = true;
       univHover = true;
       // set related Agency and Country objects to highlight = true;
+      // println("country: " + country.countryName);
       country.highlight = true;
+      // println("unAgencyAbbrev: " + unAgencyAbbrev);
+      // println("agency: " + agency.agencyName);
       agency.highlight = true;
     } else {
       hover = false;
@@ -119,5 +123,6 @@ public class Transaction {
 
   void setTransactionAgency() {
     agency = findAgencyByUnAbbrev(unAgencyAbbrev);
+    if(agency == null) println("error seeting agency for abbrev: "+unAgencyAbbrev);
   }
 }

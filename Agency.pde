@@ -84,7 +84,8 @@ public class Agency {
   void update() {
     // update the position
     // get the ordinal rank of this agency from the table
-    int agencyRank = agencyExpenditureTotalTbl.findRowIndex(unAgencyAbbrev, "Agency");
+    // int agencyRank = agencyExpenditureTotalTbl.findRowIndex(unAgencyAbbrev, "Agency");
+    int agencyRank = agencyExpenditureTotalTbl.findRowIndex(agencyName, "Agency description");
     currLoc.x = map(agencyRank, 0, agencyExpenditureTotalTbl.getRowCount()-1, agencyAxis1.x, agencyAxis2.x);
     currLoc.y = agencyAxis1.y;
   }

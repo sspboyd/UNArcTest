@@ -23,7 +23,7 @@ public class Country {
     highlight = false;
   }
 
-  public Country() {
+  public Country() { // when would this be used? search for init of class w no args
   }
 
   void resetHoverHighlight() {

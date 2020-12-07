@@ -88,12 +88,16 @@ void setup() {
   unLogo.scale(.29);
 
   // load data
-  agencyCountryTbl = loadTable("Agency_Expenditure_by_Country_2015.csv", "header");
-  expenditureByCountryTbl = loadTable("Total_Expenditure_by_Country.csv", "header");
-  agencyExpenditureTotalTbl = loadTable("Agency_Expenditure_Total_2015.csv", "header");
+  // agencyCountryTbl = loadTable("Agency_Expenditure_by_Country_2015.csv", "header");
+  agencyCountryTbl = loadTable("CountryLevelExpenditureByAgency-2015.csv", "header");
+  // expenditureByCountryTbl = loadTable("Total_Expenditure_by_Country.csv", "header");
+  expenditureByCountryTbl = loadTable("TotalExpenditureByCountry-2015.csv", "header");
+  // agencyExpenditureTotalTbl = loadTable("Agency_Expenditure_Total_2015.csv", "header");
+  agencyExpenditureTotalTbl = loadTable("TotalExpenditureByAgency-2015.csv", "header");
   unAbbrevTbl2 = loadTable("UN-Agencies-Metadata.csv", "header");
 
-  // prep data
+
+  // Prep data
   // min / max for transactions (used on funding axis)
   transactionMin = Integer.MAX_VALUE;
   transactionMax = 0;
@@ -103,6 +107,7 @@ void setup() {
     if ( currAmtVal > transactionMax) transactionMax = currAmtVal;
     if ( currAmtVal < transactionMin) transactionMin = currAmtVal; // this could be a negative value!
   }
+  println("agencyCountryTbl.getRowCount() = "+ agencyCountryTbl.getRowCount());
   println("transactionMax = "+ transactionMax);
 
   // max/min spend by country
@@ -125,15 +130,21 @@ void setup() {
   agencyCards = new HashMap<String, AgencyCard>();
 
   // Populate ArrayLists
-  //Transactions ArrayLists
+  // Transactions ArrayLists
   for (int i=0; i < agencyCountryTbl.getRowCount(); i++) {
     TableRow agencyCountryRow = agencyCountryTbl.getRow(i);
-    int     currYear= agencyCountryRow.getInt("Year");
-    String  currCountryName= agencyCountryRow.getString("Country");
-    float   currAmount= agencyCountryRow.getFloat("Amount");
-    String  currAgency= agencyCountryRow.getString("Agency");
-    Transaction newTransaction = new Transaction(currYear, currCountryName, currAmount, currAgency);
-    transactions.add(newTransaction);
+    float   currAmount = agencyCountryRow.getFloat("Amount");
+    if (currAmount > 0) {
+      String  currAgency = agencyCountryRow.getString("Agency");
+      int     currYear = agencyCountryRow.getInt("Year");
+      String  currCountryName = agencyCountryRow.getString("Country");
+      // println(currYear, currCountryName, currAmount, currAgency);
+      Transaction newTransaction = new Transaction(currYear, currCountryName, currAmount, currAgency);
+      if (currCountryName.indexOf("Congo") != -1) {
+        // println("New Transaction object params: "+currYear+", "+currCountryName+", "+currAmount+", "+currAgency);
+      }
+      transactions.add(newTransaction);
+    }
   }
 
   // Countries ArrayList
@@ -149,20 +160,54 @@ void setup() {
   // Agencies ArrayList
   for (int i=0; i < agencyExpenditureTotalTbl.getRowCount(); i++) {
     TableRow agencyRow = agencyExpenditureTotalTbl.getRow(i);
-    int     currYear = 2015; // hard coding year val....
-    String  currAgencyUNAbbrev= agencyRow.getString("Agency");
-    // String currExpenditure = agencyRow.getString("Expenditure");
-    println("currAgencyUNAbbrev : " + currAgencyUNAbbrev);
-    TableRow result = unAbbrevTbl2.findRow(currAgencyUNAbbrev, "Abbreviation");
-    println("result: " + result);
-    String currAgencyName = "";
-    if (result != null) {
-      currAgencyName = result.getString("Official name");
+    if (i<1) {
+      // println("column headers for agencyExpenditureTotalTbl");
+      // println(agencyRow.getColumnTitle(0));
+      // println(agencyRow.getColumnTitle(1));
+      // println(agencyRow.getColumnTitle(2));
+    }
+    int     currYear = 2015; // hardcoding year val....
+    String  currAgencyName = agencyRow.getString("Agency description");
+    // println("currAgencyUNAbbrev : " + currAgencyUNAbbrev);
+    // result var is too vague it. its really a table row for the first (only) entry for 
+    // a row matching the 'Official name' column entry.
+    // so, better var name is... trAgencyData
+    TableRow trAgencyData = unAbbrevTbl2.findRow(currAgencyName, "Official name");
+    // if(trAgencyData == null) println("currAgencyName gives a null, " + currAgencyName);
+    String currAgencyUNAbbrev = "";
+    // if(trAgencyData != null) println(trAgencyData.toString());
+    if (trAgencyData != null) {
+      currAgencyUNAbbrev = trAgencyData.getString("Abbreviation");
+      // println("Matching row to Official name: " + currAgencyName + ", " +  trAgencyData.getString("Abbreviation"));
+    } else {
+      println("Matching row to Official name: " + currAgencyName + ", " +  trAgencyData);
     }
     float   currAmount= agencyRow.getFloat("Expenditure");
-    Agency newAgency = new Agency(currYear, currAgencyUNAbbrev, currAgencyName, currAmount);
-    agencies.add(newAgency);
+    if (trAgencyData != null) {
+      println("data for new agency object: "+ currAgencyUNAbbrev, currAgencyName);
+      Agency newAgency = new Agency(currYear, currAgencyUNAbbrev, currAgencyName, currAmount);
+      agencies.add(newAgency);
+    }
+    // println("new Agency params: "+ currYear +", "+ currAgencyUNAbbrev +", "+ currAgencyName +", "+ currAmount);
   }
+  // // Agencies ArrayList
+  // for (int i=0; i < agencyExpenditureTotalTbl.getRowCount(); i++) {
+  //   TableRow agencyRow = agencyExpenditureTotalTbl.getRow(i);
+  //   int     currYear = 2015; // hardcoding year val....
+  //   String  currAgencyUNAbbrev= agencyRow.getString("Agency");
+  //   // String currExpenditure = agencyRow.getString("Expenditure");
+  //   // println("currAgencyUNAbbrev : " + currAgencyUNAbbrev);
+  //   TableRow result = unAbbrevTbl2.findRow(currAgencyUNAbbrev, "Abbreviation");
+  //   // println("TableRow result: " + result);
+  //   String currAgencyName = "";
+  //   if (result != null) {
+  //     currAgencyName = result.getString("Official name");
+  //   }
+  //   float   currAmount= agencyRow.getFloat("Expenditure");
+  //   Agency newAgency = new Agency(currYear, currAgencyUNAbbrev, currAgencyName, currAmount);
+  //   println("new Agency params: "+ currYear +", "+ currAgencyUNAbbrev +", "+ currAgencyName +", "+ currAmount);
+  //   agencies.add(newAgency);
+  // }
 
   // Set references between Country, Agency and Transaction objects
   println("setting transaction references");
@@ -234,7 +279,7 @@ void draw() {
   shape(unLogo, PLOT_X1, PLOT_Y1+200);
   updateAxes();
 
-  // renderBarChart();
+  renderBarChart();
 
   // Reset hover and highlight values to off
   univHover = false;
@@ -245,7 +290,6 @@ void draw() {
   for (Country cty : countries) {
     cty.resetHoverHighlight();
   }
-
   for (Transaction t : transactions) {
     t.resetHoverHighlight();
   }
@@ -504,7 +548,8 @@ void renderBarChart() {
     float tx = countryAxis1.x + 18;
     float ty = map(rowCounter+=1, 0, expenditureByCountryTbl.getRowCount(), PLOT_Y1, PLOT_Y2);
     float barChartW = map(row.getFloat("Amount"), 0, countryExpendMax, 0, PLOT_X2-countryAxis1.x);
-    fill(unBlueClr, 76);
+    // fill(unBlueClr, 76);
+    fill(123,123,123, 76);
     noStroke();
     rect(tx, ty, barChartW, 2);
   }
