@@ -279,7 +279,7 @@ void draw() {
   shape(unLogo, PLOT_X1, PLOT_Y1+200);
   updateAxes();
 
-  renderBarChart();
+  // renderBarChart();
 
   // Reset hover and highlight values to off
   univHover = false;
@@ -290,6 +290,7 @@ void draw() {
   for (Country cty : countries) {
     cty.resetHoverHighlight();
   }
+  
   for (Transaction t : transactions) {
     t.resetHoverHighlight();
   }
@@ -548,8 +549,7 @@ void renderBarChart() {
     float tx = countryAxis1.x + 18;
     float ty = map(rowCounter+=1, 0, expenditureByCountryTbl.getRowCount(), PLOT_Y1, PLOT_Y2);
     float barChartW = map(row.getFloat("Amount"), 0, countryExpendMax, 0, PLOT_X2-countryAxis1.x);
-    // fill(unBlueClr, 76);
-    fill(123,123,123, 76);
+    fill(unBlueClr, 76);
     noStroke();
     rect(tx, ty, barChartW, 2);
   }
