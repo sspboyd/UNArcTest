@@ -48,3 +48,8 @@ tasks.json
 .vscode/
 documents/
 UNArcTest.code-workspace
+
+
+.ipynb_*
+*checkpoint.ipynb
+.venv*
