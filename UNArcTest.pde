@@ -75,9 +75,12 @@ void setup() {
   // size(2048, 1536); // iPad Air 2;
   // size(1920, 1030, P2D); // office display size
   size(1440, 850, P2D); // curent macbook pro size at half scaling?
+  // size(1280, 800); // curent macbook pro size at half scaling?
+  
   // size(1600, 900);
   // size(1300, 850);
   // size(720, 650);
+  frameRate(30);
   smooth(8);
   setPositioningVariables();
   rSn = 47; // 4,7,11,18,29...;
@@ -184,7 +187,7 @@ void setup() {
     }
     float   currAmount= agencyRow.getFloat("Expenditure");
     if (trAgencyData != null) {
-      println("data for new agency object: "+ currAgencyUNAbbrev, currAgencyName);
+      // println("data for new agency object: "+ currAgencyUNAbbrev, currAgencyName);
       Agency newAgency = new Agency(currYear, currAgencyUNAbbrev, currAgencyName, currAmount);
       agencies.add(newAgency);
     }
